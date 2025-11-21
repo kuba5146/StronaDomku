@@ -2,13 +2,13 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>ESP32 Relay Control Dashboard</title>
+  <title>Sterowanie oświetleniem biurka</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      background-color: #f9f9f9;
+      background-color: #889482;
       margin: 0;
       padding: 0 10px 40px;
       display: flex;
@@ -22,7 +22,7 @@
     }
     .relay-card {
       display: inline-block;
-      background-color: white;
+      background-color: #DDDDDD;
       padding: 20px;
       margin: 15px;
       border-radius: 15px;
@@ -62,7 +62,7 @@
       cursor: pointer;
       margin: 15px auto;
       display: block;
-      color: white;
+      color: #DDDDDD;
       transition: opacity 0.3s ease;
     }
     #allOffBtn {
@@ -146,7 +146,7 @@
 </head>
 <body>
 
-  <h1>ESP32 Relay Control Dashboard</h1>
+  <h1>Logowanie do domu</h1>
 
   <!-- Login form -->
   <div id="loginForm">
@@ -159,36 +159,36 @@
   <div id="dashboard">
     <div class="relay-container">
       <div class="relay-card">
-        <h2>Relay 1</h2>
+        <h2>Światło lewe</h2>
         <p>Status: <span id="status1">Loading...</span></p>
         <button id="btn1">Toggle</button>
       </div>
 
       <div class="relay-card">
-        <h2>Relay 2</h2>
+        <h2>Swiatło środkowe</h2>
         <p>Status: <span id="status2">Loading...</span></p>
         <button id="btn2">Toggle</button>
       </div>
 
       <div class="relay-card">
-        <h2>Relay 3</h2>
+        <h2>Światło prawe</h2>
         <p>Status: <span id="status3">Loading...</span></p>
         <button id="btn3">Toggle</button>
       </div>
 
       <div class="relay-card">
-        <h2>Relay 4</h2>
+        <h2>Gniazdka</h2>
         <p>Status: <span id="status4">Loading...</span></p>
         <button id="btn4">Toggle</button>
       </div>
     </div>
 
-    <button id="allOffBtn">All OFF</button>
-    <button id="logoutBtn">Logout</button>
+    <button id="allOffBtn">Wyłącz wszystko</button>
+    <button id="logoutBtn">Wyloguj</button>
   </div>
 
   <footer>
-    Created by Tech StudyCell
+    Podjebka od Tech StudyCell
   </footer>
 
   <!-- Firebase SDKs -->
@@ -263,7 +263,7 @@
         relayRef.on("value", (snapshot) => {
           const state = snapshot.val();
           statusText.innerText = state ? "ON" : "OFF";
-          toggleButton.style.backgroundColor = state ? "green" : "blue";
+          toggleButton.style.backgroundColor = state ? "#3A6F43" : "#808B97";
         });
 
         toggleButton.onclick = () => {
@@ -296,3 +296,4 @@
 </body>
 
 </html>
+
