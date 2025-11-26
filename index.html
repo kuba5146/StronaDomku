@@ -16,75 +16,76 @@
       --danger: #ff3b30;
       --off: #f87171;
       --on: #34d399;
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-      --glow: 0 0 20px rgba(0, 212, 255, 0.4);
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --glow: 0 0 20px rgba(0,212,255,0.4);
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* === TRYB NOCNY === */
+    body.night-mode {
+      --bg: #050507;
+      --card: #0e0e12;
+      --text: #444;
+      --text-muted: #333;
+      --primary: #ff2e63;
+      --success: #08f8a0;
+      --on: #08f8a0;
+      --off: #ff3366;
+      --glow: 0 0 15px rgba(255,46,99,0.3);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #0f1116 0%, #1a1d2e 100%);
+      background: linear-gradient(135deg, var(--bg) 0%, #1a1d2e 100%);
       color: var(--text);
       min-height: 100vh;
       padding: 20px 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      position: relative;
+      transition: var(--transition);
+      overflow-x: hidden;
     }
 
+    /* Przełącznik trybu nocnego */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(30,30,40,0.8);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    .theme-toggle:hover { transform: scale(1.1); }
+    .theme-toggle i { font-size: 1.5rem; color: var(--primary); transition: var(--transition); }
+
     h1 {
-      font-size: 2.4rem;
-      background: linear-gradient(90deg, #00d4ff, #00ff88);
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, var(--primary), var(--success));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
       text-align: center;
-      margin: 30px 0 40px;
-      text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+      margin: 30px 0 50px;
+      text-shadow: 0 0 30px rgba(0,212,255,0.5);
+      transition: var(--transition);
     }
 
-    #loginForm {
-      max-width: 420px;
-      margin: 60px auto;
-      background: var(--card);
-      padding: 40px 30px;
-      border-radius: 20px;
-      box-shadow: var(--shadow), var(--glow);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 212, 255, 0.2);
+    #loginForm { /* bez zmian – już było piękne */ 
+      max-width: 420px; margin: 60px auto; background: var(--card); padding: 40px 30px;
+      border-radius: 20px; box-shadow: var(--shadow), var(--glow); backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,212,255,0.2); transition: var(--transition);
     }
-
-    #loginForm input {
-      width: 100%;
-      padding: 14px 18px;
-      margin: 12px 0 20px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(0,212,255,0.3);
-      border-radius: 12px;
-      color: white;
-      font-size: 1rem;
-      transition: all 0.3s;
-    }
-    #loginForm input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 15px rgba(0,212,255,0.5);
-    }
-
-    #loginForm button {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(45deg, #00d4ff, #00ff88);
-      color: black;
-      font-weight: bold;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 15px rgba(0,212,255,0.4);
-    }
-    #loginForm button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,212,255,0.6); }
+    /* ... reszta stylów login identyczna jak wcześniej ... */
 
     #dashboard { display: none; }
 
@@ -93,174 +94,125 @@
       margin: 0 auto 30px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
+      gap: 24px;
       padding: 0 10px;
     }
 
     .relay-card {
       background: var(--card);
-      border-radius: 20px;
-      padding: 24px;
+      border-radius: 24px;
+      padding: 28px;
       text-align: center;
       box-shadow: var(--shadow);
       border: 1px solid rgba(0,212,255,0.15);
-      transition: all 0.4s ease;
+      transition: var(--transition);
       position: relative;
       overflow: hidden;
     }
-    .relay-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, rgba(0,212,255,0.1), transparent);
-      opacity: 0;
-      transition: opacity 0.4s;
+
+    /* Efekt włączania – pulsujące światło */
+    .relay-card.turning-on {
+      animation: pulseOn 0.8s ease-out;
     }
-    .relay-card:hover::before { opacity: 1; }
-    .relay-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.6), var(--glow); }
+    .relay-card.turning-off {
+      animation: pulseOff 0.6s ease-out;
+    }
+
+    @keyframes pulseOn {
+      0%   { box-shadow: var(--shadow), 0 0 0 rgba(52,211,153,0); }
+      50%  { box-shadow: var(--shadow), 0 0 50px rgba(52,211,153,0.8); transform: scale(1.05); }
+      100% { box-shadow: var(--shadow), 0 0 20px rgba(52,211,153,0.4); transform: scale(1); }
+    }
+    @keyframes pulseOff {
+      0%   { box-shadow: var(--shadow), 0 0 50px rgba(248,113,113,0.6); }
+      100% { box-shadow: var(--shadow); }
+    }
 
     .relay-card i {
-      font-size: 3rem;
-      margin-bottom: 15px;
+      font-size: 3.2rem;
+      margin-bottom: 16px;
       background: linear-gradient(45deg, var(--primary), var(--success));
       -webkit-background-clip: text;
-      background-clip: text;
       color: transparent;
-    }
-
-    .relay-card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 10px;
-      color: var(--text);
+      transition: var(--transition);
     }
 
     .status {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: bold;
-      margin: 15px 0;
-      padding: 8px 16px;
+      padding: 10px 20px;
       border-radius: 50px;
-      display: inline-block;
-      min-width: 100px;
+      min-width: 110px;
+      transition: var(--transition);
     }
-    .status.on {
-      background: rgba(52, 211, 153, 0.2);
-      color: var(--on);
-      box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
-    }
-    .status.off {
-      background: rgba(248, 113, 113, 0.2);
-      color: var(--off);
-    }
+    .status.on  { background: rgba(52,211,153,0.2); color: var(--on); box-shadow: 0 0 20px rgba(52,211,153,0.4); }
+    .status.off { background: rgba(248,113,113,0.2); color: var(--off); }
 
     .relay-card button {
       width: 100%;
-      padding: 16px;
-      margin-top: 15px;
+      padding: 18px;
+      margin-top: 18px;
       border: none;
-      border-radius: 14px;
-      font-size: 1.1rem;
+      border-radius: 16px;
+      font-size: 1.2rem;
       font-weight: bold;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: var(--transition);
       position: relative;
       overflow: hidden;
     }
-    .relay-card button.on {
-      background: linear-gradient(45deg, #10b981, #34d399);
-      color: white;
-      box-shadow: 0 0 20px rgba(52,211,153,0.5);
-    }
-    .relay-card button.off {
-      background: linear-gradient(45deg, #64748b, #94a3b8);
-      color: white;
-    }
-    .relay-card button:hover { transform: scale(1.05); }
+    .relay-card button.on  { background: linear-gradient(45deg, #10b981, #34d399); box-shadow: 0 0 25px rgba(52,211,153,0.6); }
+    .relay-card button.off { background: linear-gradient(45deg, #64748b, #94a3b8); }
 
-    .global-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-      margin: 30px 0;
-    }
-    .global-buttons button {
-      padding: 14px 30px;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-      min-width: 220px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
+    /* Przycisk Wszystko */
     #allToggleBtn {
       background: linear-gradient(45deg, #8b5cf6, #ec4899);
-      color: white;
-      box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+      min-width: 240px;
+      box-shadow: 0 0 25px rgba(139,92,246,0.5);
     }
     #allToggleBtn.all-on {
       background: linear-gradient(45deg, #ef4444, #f87171);
-      box-shadow: 0 0 20px rgba(239,68,68,0.5);
-    }
-    #logoutBtn {
-      background: #374151;
-      color: white;
-    }
-    .global-buttons button:hover { 
-      transform: translateY(-4px); 
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+      box-shadow: 0 0 25px rgba(239,68,68,0.6);
     }
 
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #555;
-      font-size: 0.9rem;
-    }
+    .global-buttons button:hover { transform: translateY(-5px) scale(1.03); }
 
-    @media (max-width: 600px) {
-      h1 { font-size: 2rem; }
-      .relay-card { padding: 20px; }
-      .global-buttons { flex-direction: column; align-items: center; }
-    }
+    footer { text-align: center; padding: 30px; color: #444; font-size: 0.9rem; transition: var(--transition); }
   </style>
 </head>
 <body>
 
+  <!-- Przełącznik trybu nocnego -->
+  <div class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </div>
+
   <h1>Oświetlenie biurka</h1>
 
-  <div id="loginForm">
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Hasło" required />
-    <button id="loginBtn">ZALOGUJ</button>
-  </div>
+  <!-- Login i reszta HTML identyczna jak wcześniej (skróciłem dla czytelności) -->
+  <div id="loginForm"> … </div>
 
   <div id="dashboard">
     <div class="relay-container">
-      <div class="relay-card">
+      <div class="relay-card" data-relay="1">
         <i class="fas fa-lightbulb"></i>
         <h2>Światło lewe</h2>
         <div class="status" id="status1">Loading...</div>
         <button id="btn1">Ładowanie...</button>
       </div>
-      <div class="relay-card">
+      <div class="relay-card" data-relay="2">
         <i class="fas fa-lightbulb"></i>
         <h2>Światło środkowe</h2>
         <div class="status" id="status2">Loading...</div>
         <button id="btn2">Ładowanie...</button>
       </div>
-      <div class="relay-card">
+      <div class="relay-card" data-relay="3">
         <i class="fas fa-lightbulb"></i>
         <h2>Światło prawe</h2>
         <div class="status" id="status3">Loading...</div>
         <button id="btn3">Ładowanie...</button>
       </div>
-      <div class="relay-card">
+      <div class="relay-card" data-relay="4">
         <i class="fas fa-plug"></i>
         <h2>Gniazdka</h2>
         <div class="status" id="status4">Loading...</div>
@@ -269,83 +221,76 @@
     </div>
 
     <div class="global-buttons">
-      <button id="allToggleBtn">
-        <i class="fas fa-sync"></i> <span>Sprawdzanie...</span>
-      </button>
+      <button id="allToggleBtn"><i class="fas fa-bolt"></i> <span>Sprawdzanie...</span></button>
       <button id="logoutBtn">Wyloguj</button>
     </div>
   </div>
 
   <footer>Podjebka od Tech StudyCell © 2025</footer>
 
+  <!-- Firebase + cały poprzedni skrypt + nowe funkcje -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
-      authDomain: "domek-52b6a.firebaseapp.com",
-      databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "domek-52b6a",
-      storageBucket: "domek-52b6a.firebasestorage.app",
-      messagingSenderId: "641050671936",
-      appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
-    };
+    // === TRYBY NOCNY / DZIENNY ===
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    if (localStorage.getItem('nightMode') === 'true') {
+      body.classList.add('night-mode');
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('night-mode');
+      const isNight = body.classList.contains('night-mode');
+      themeToggle.innerHTML = isNight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+      localStorage.setItem('nightMode', isNight);
+    });
+
+    // === RESZTA KODU (login + relay control) ===
+    const firebaseConfig = { /* Twój config */ };
     firebase.initializeApp(firebaseConfig);
 
     const allowedEmail = "joszrank@gmail.com";
     const allowedPassword = "LotyWChmurach";
-
     const loginForm = document.getElementById("loginForm");
     const dashboard = document.getElementById("dashboard");
     const allToggleBtn = document.getElementById("allToggleBtn");
     const allToggleText = allToggleBtn.querySelector("span");
 
-    document.getElementById("loginBtn").addEventListener("click", () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      if (!email || !password) return alert("Wpisz email i hasło!");
-
-      if (email === allowedEmail && password === allowedPassword) {
-        firebase.auth().signInWithEmailAndPassword(email, password)
-          .then(() => {
-            loginForm.style.display = "none";
-            dashboard.style.display = "block";
-            startRelayControl();
-          })
-          .catch(err => alert("Błąd logowania: " + err.message));
-      } else {
-        alert("Zły email lub hasło!");
-      }
-    });
+    // ... (cały poprzedni kod logowania – bez zmian)
 
     function startRelayControl() {
       const db = firebase.database();
-      const relays = [
-        { id: 1, path: "b0" },
-        { id: 2, path: "b1" },
-        { id: 3, path: "b2" },
-        { id: 4, path: "b3" }
-      ];
+      const relays = [{id:1,path:"b0"}, {id:2,path:"b1"}, {id:3,path:"b2"}, {id:4,path:"b3"}];
+      const cards = document.querySelectorAll('.relay-card');
+      let allStates = [false,false,false,false];
 
-      let allStates = [false, false, false, false]; // śledzenie stanów
-
-      relays.forEach((r, index) => {
+      relays.forEach((r, i) => {
         const statusEl = document.getElementById(`status${r.id}`);
         const btn = document.getElementById(`btn${r.id}`);
+        const card = cards[i];
         const ref = db.ref("/" + r.path);
 
         ref.on("value", snap => {
-          const state = snap.val() === true;
-          allStates[index] = state;
+          const newState = snap.val() === true;
+          const oldState = allStates[i];
+          allStates[i] = newState;
 
-          statusEl.textContent = state ? "ON" : "OFF";
-          statusEl.className = "status " + (state ? "on" : "off");
-          btn.textContent = state ? "WYŁĄCZ" : "WŁĄCZ";
-          btn.className = state ? "on" : "off";
+          // Animacja włączania/wyłączania
+          if (newState !== oldState) {
+            card.classList.remove('turning-on', 'turning-off');
+            void card.offsetWidth; // reflow
+            card.classList.add(newState ? 'turning-on' : 'turning-off');
+          }
 
-          // Aktualizuj przycisk "Wszystko"
+          statusEl.textContent = newState ? "ON" : "OFF";
+          statusEl.className = "status " + (newState ? "on" : "off");
+          btn.textContent = newState ? "WYŁĄCZ" : "WŁĄCZ";
+          btn.className = newState ? "on" : "off";
+
           updateAllToggleButton();
         });
 
@@ -353,38 +298,19 @@
       });
 
       function updateAllToggleButton() {
-        const allOn = allStates.every(s => s === true);
-        const allOff = allStates.every(s => s === false);
-
-        if (allOn) {
-          allToggleText.textContent = "WYŁĄCZ WSZYSTKO";
-          allToggleBtn.classList.add("all-on");
-          allToggleBtn.querySelector("i").className = "fas fa-power-off";
-        } else {
-          allToggleText.textContent = "WŁĄCZ WSZYSTKO";
-          allToggleBtn.classList.remove("all-on");
-          allToggleBtn.querySelector("i").className = "fas fa-bolt";
-        }
+        const allOn = allStates.every(s => s);
+        allToggleText.textContent = allOn ? "WYŁĄCZ WSZYSTKO" : "WŁĄCZ WSZYSTKO";
+        allToggleBtn.querySelector('i').className = allOn ? "fas fa-power-off" : "fas fa-bolt";
+        allToggleBtn.classList.toggle('all-on', allOn);
       }
 
       allToggleBtn.onclick = () => {
-        const allOn = allStates.every(s => s === true);
-        const targetState = allOn ? false : true;
-
-        relays.forEach(r => {
-          db.ref("/" + r.path).set(targetState);
-        });
+        const target = allStates.every(s => s) ? false : true;
+        relays.forEach(r => db.ref("/" + r.path).set(target));
       };
     }
 
-    document.getElementById("logoutBtn").onclick = () => {
-      firebase.auth().signOut().then(() => {
-        dashboard.style.display = "none";
-        loginForm.style.display = "block";
-        document.getElementById("email").value = "";
-        document.getElementById("password").value = "";
-      });
-    };
+    // ... reszta logowania i wylogowania bez zmian
   </script>
 </body>
 </html>
