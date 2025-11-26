@@ -48,16 +48,16 @@
   <h1>Sterowanie oświetleniem domu</h1>
 
   <div class="tabs">
-    <div class="tab active" data-room="biurko"><i class="fas fa-desktop"></i> Biurko</div>
-    <div class="tab" data-room="pracownia"><i class="fas fa-tools"></i> Pracownia</div>
-    <div class="tab" data-room="pokoj"><i class="fas fa-bed"></i> Pokój</div>
-    <div class="tab" data-room="salon"><i class="fas fa-couch"></i> Salon</div>
+    <div class="tab active" data-room="biurko">Biurko</div>
+    <div class="tab" data-room="pracownia">Pracownia</div>
+    <div class="tab" data-room="pokoj">Pokój</div>
+    <div class="tab" data-room="salon">Salon</div>
   </div>
 
-  <div id="biurko" class="room active"><div class="relay-container" id="biurko-container"></div><div class="room-controls"><button class="all-toggle" id="allBiurko"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
-  <div id="pracownia" class="room"><div class="relay-container" id="pracownia-container"></div><div class="room-controls"><button class="all-toggle" id="allPracownia"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
-  <div id="pokoj" class="room"><div class="relay-container" id="pokoj-container"></div><div class="room-controls"><button class="all-toggle" id="allPokoj"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
-  <div id="salon" class="room"><div class="relay-container" id="salon-container"></div><div class="room-controls"><button class="all-toggle" id="allSalon"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
+  <div id="biurko" class="room active"><div class="relay-container" id="biurko-container"></div><div class="room-controls"><button class="all-toggle" id="allBiurko">Sprawdzanie...</button></div></div>
+  <div id="pracownia" class="room"><div class="relay-container" id="pracownia-container"></div><div class="room-controls"><button class="all-toggle" id="allPracownia">Sprawdzanie...</button></div></div>
+  <div id="pokoj" class="room"><div class="relay-container" id="pokoj-container"></div><div class="room-controls"><button class="all-toggle" id="allPokoj">Sprawdzanie...</button></div></div>
+  <div id="salon" class="room"><div class="relay-container" id="salon-container"></div><div class="room-controls"><button class="all-toggle" id="allSalon">Sprawdzanie...</button></div></div>
 
   <footer>Tech StudyCell © 2025</footer>
 
@@ -85,6 +85,15 @@
       appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
     });
     const db = firebase.database();
+
+    // AUTOMATYCZNE TWORZENIE BRAKUJĄCYCH ZMIENNYCH Z WŁAŚCIWĄ STRUKTURĄ
+    for (let i = 0; i <= 15; i++) {
+      db.ref('/b' + i).once('value').then(snap => {
+        if (snap.val() === null) {
+          db.ref('/b' + i + '/state').set(false);
+        }
+      });
+    }
 
     const rooms = {
       biurko:    { start: 0, lights: 3, sockets: 1 },
@@ -117,45 +126,46 @@
 
         const statusEl = document.getElementById(`status${idx}`);
         const btn = document.getElementById(`btn${idx}`);
-        const ref = db.ref('/b' + idx);
+        const ref = db.ref('/b' + idx + '/state');   // ← TO JEST KLUCZOWE!
 
-        let previousState = null;
+        let prevState = null;
 
         ref.on('value', snap => {
           const state = snap.val() === true;
           states[i] = state;
 
-          // Animacja tylko przy zmianie stanu
-          if (previousState !== null && state !== previousState) {
+          if (prevState !== null && state !== prevState) {
             card.classList.remove('turning-on', 'turning-off');
             void card.offsetWidth;
             card.classList.add(state ? 'turning-on' : 'turning-off');
           }
-          previousState = state;
+          prevState = state;
 
           statusEl.textContent = state ? "ON" : "OFF";
           statusEl.className = "status " + (state ? "on" : "off");
           btn.textContent = state ? "WYŁĄCZ" : "WŁĄCZ";
           btn.className = state ? "on" : "off";
 
-          // Aktualizacja przycisku Wszystko
-          const allOn = states.every(s => s === true);
+          const allOn = states.filter(s => s !== undefined).every(s => s === true);
           allBtn.innerHTML = `<i class="fas fa-${allOn ? 'power-off' : 'bolt'}"></i> ${allOn ? 'WYŁĄCZ WSZYSTKO' : 'WŁĄCZ WSZYSTKO'}`;
           allBtn.classList.toggle('all-on', allOn);
         });
 
-        btn.onclick = () => ref.get().then(s => ref.set(!s.val()));
+        btn.onclick = () => {
+          const newState = !states[i];
+          ref.set(newState);
+        };
       }
 
       allBtn.onclick = () => {
-        const target = states.every(s => s === true) ? false : true;
+        const target = states.filter(s => s !== undefined).every(s => s === true) ? false : true;
         for (let i = 0; i < states.length; i++) {
-          db.ref('/b' + (cfg.start + i)).set(target);
+          db.ref('/b' + (cfg.start + i) + '/state').set(target);
         }
       };
     });
 
-    // Przełączanie zakładek
+    // Zakładki
     document.querySelectorAll('.tab').forEach(tab => {
       tab.onclick = () => {
         document.querySelectorAll('.tab,.room').forEach(el => el.classList.remove('active'));
