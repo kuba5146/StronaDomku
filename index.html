@@ -43,7 +43,6 @@
       text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
     }
 
-    /* LOGIN */
     #loginForm {
       max-width: 420px;
       margin: 60px auto;
@@ -87,7 +86,6 @@
     }
     #loginForm button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,212,255,0.6); }
 
-    /* DASHBOARD */
     #dashboard { display: none; }
 
     .relay-container {
@@ -179,7 +177,6 @@
     }
     .relay-card button:hover { transform: scale(1.05); }
 
-    /* Przyciski globalne */
     .global-buttons {
       display: flex;
       flex-wrap: wrap;
@@ -195,18 +192,29 @@
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s;
-      min-width: 200px;
+      min-width: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
-    #allOffBtn {
-      background: linear-gradient(45deg, #ef4444, #f87171);
+    #allToggleBtn {
+      background: linear-gradient(45deg, #8b5cf6, #ec4899);
       color: white;
-      box-shadow: 0 0 20px rgba(239,68,68,0.4);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+    }
+    #allToggleBtn.all-on {
+      background: linear-gradient(45deg, #ef4444, #f87171);
+      box-shadow: 0 0 20px rgba(239,68,68,0.5);
     }
     #logoutBtn {
       background: #374151;
       color: white;
     }
-    .global-buttons button:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .global-buttons button:hover { 
+      transform: translateY(-4px); 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+    }
 
     footer {
       text-align: center;
@@ -224,53 +232,52 @@
 </head>
 <body>
 
-  <h1><i class="fas fa-lightbulb"></i> Oświetlenie biurka</h1>
+  <h1>Oświetlenie biurka</h1>
 
-  <!-- Login -->
   <div id="loginForm">
     <input type="email" id="email" placeholder="Email" required />
     <input type="password" id="password" placeholder="Hasło" required />
-    <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> ZALOGUJ</button>
+    <button id="loginBtn">ZALOGUJ</button>
   </div>
 
-  <!-- Dashboard -->
   <div id="dashboard">
     <div class="relay-container">
       <div class="relay-card">
         <i class="fas fa-lightbulb"></i>
         <h2>Światło lewe</h2>
         <div class="status" id="status1">Loading...</div>
-        <button id="btn1">Toggle</button>
+        <button id="btn1">Ładowanie...</button>
       </div>
       <div class="relay-card">
         <i class="fas fa-lightbulb"></i>
         <h2>Światło środkowe</h2>
         <div class="status" id="status2">Loading...</div>
-        <button id="btn2">Toggle</button>
+        <button id="btn2">Ładowanie...</button>
       </div>
       <div class="relay-card">
         <i class="fas fa-lightbulb"></i>
         <h2>Światło prawe</h2>
         <div class="status" id="status3">Loading...</div>
-        <button id="btn3">Toggle</button>
+        <button id="btn3">Ładowanie...</button>
       </div>
       <div class="relay-card">
         <i class="fas fa-plug"></i>
         <h2>Gniazdka</h2>
         <div class="status" id="status4">Loading...</div>
-        <button id="btn4">Toggle</button>
+        <button id="btn4">Ładowanie...</button>
       </div>
     </div>
 
     <div class="global-buttons">
-      <button id="allOffBtn"><i class="fas fa-power-off"></i> WYŁĄCZ WSZYSTKO</button>
-      <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Wyloguj</button>
+      <button id="allToggleBtn">
+        <i class="fas fa-sync"></i> <span>Sprawdzanie...</span>
+      </button>
+      <button id="logoutBtn">Wyloguj</button>
     </div>
   </div>
 
   <footer>Podjebka od Tech StudyCell © 2025</footer>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
@@ -291,6 +298,8 @@
 
     const loginForm = document.getElementById("loginForm");
     const dashboard = document.getElementById("dashboard");
+    const allToggleBtn = document.getElementById("allToggleBtn");
+    const allToggleText = allToggleBtn.querySelector("span");
 
     document.getElementById("loginBtn").addEventListener("click", () => {
       const email = document.getElementById("email").value.trim();
@@ -320,24 +329,51 @@
         { id: 4, path: "b3" }
       ];
 
-      relays.forEach(r => {
+      let allStates = [false, false, false, false]; // śledzenie stanów
+
+      relays.forEach((r, index) => {
         const statusEl = document.getElementById(`status${r.id}`);
         const btn = document.getElementById(`btn${r.id}`);
         const ref = db.ref("/" + r.path);
 
         ref.on("value", snap => {
-          const state = snap.val();
+          const state = snap.val() === true;
+          allStates[index] = state;
+
           statusEl.textContent = state ? "ON" : "OFF";
           statusEl.className = "status " + (state ? "on" : "off");
           btn.textContent = state ? "WYŁĄCZ" : "WŁĄCZ";
           btn.className = state ? "on" : "off";
+
+          // Aktualizuj przycisk "Wszystko"
+          updateAllToggleButton();
         });
 
         btn.onclick = () => ref.get().then(s => ref.set(!s.val()));
       });
 
-      document.getElementById("allOffBtn").onclick = () => {
-        relays.forEach(r => db.ref("/" + r.path).set(false));
+      function updateAllToggleButton() {
+        const allOn = allStates.every(s => s === true);
+        const allOff = allStates.every(s => s === false);
+
+        if (allOn) {
+          allToggleText.textContent = "WYŁĄCZ WSZYSTKO";
+          allToggleBtn.classList.add("all-on");
+          allToggleBtn.querySelector("i").className = "fas fa-power-off";
+        } else {
+          allToggleText.textContent = "WŁĄCZ WSZYSTKO";
+          allToggleBtn.classList.remove("all-on");
+          allToggleBtn.querySelector("i").className = "fas fa-bolt";
+        }
+      }
+
+      allToggleBtn.onclick = () => {
+        const allOn = allStates.every(s => s === true);
+        const targetState = allOn ? false : true;
+
+        relays.forEach(r => {
+          db.ref("/" + r.path).set(targetState);
+        });
       };
     }
 
