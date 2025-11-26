@@ -1,305 +1,354 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
   <meta charset="UTF-8" />
   <title>Sterowanie oświetleniem biurka</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #889482;
-      margin: 0;
-      padding: 0 10px 40px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      justify-content: space-between;
-    }
-    h1 {
-      margin-top: 30px;
-      font-size: 1.8rem;
-    }
-    .relay-card {
-      display: inline-block;
-      background-color: #DDDDDD;
-      padding: 20px;
-      margin: 15px;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 220px;
-      vertical-align: top;
-    }
-    .relay-card h2 {
-      margin-bottom: 10px;
-      font-size: 1.3rem;
-    }
-    .relay-card p {
-      margin-bottom: 10px;
-      font-size: 1rem;
-    }
-    .relay-card button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      color: #DDDDDD;
-      background-color: blue;
-      cursor: pointer;
-      font-size: 16px;
-	  width: 90%;
-      transition: opacity 0.3s ease;
-    }
-    .relay-card button:hover {
-      opacity: 0.8;
-    }
-    #allOffBtn, #logoutBtn {
-      max-width: 300px;
-      width: 90%;
-      padding: 12px 25px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin: 15px auto;
-      display: block;
-      color: #DDDDDD;
-      transition: opacity 0.3s ease;
-    }
-    #allOffBtn {
-      background-color: #d32f2f;
-    }
-    #allOffBtn:hover {
-      opacity: 0.8;
-    }
-    #logoutBtn {
-      background-color: #555;
-    }
-    #logoutBtn:hover {
-      opacity: 0.8;
+    :root {
+      --bg: #0f1116;
+      --card: #1a1d24;
+      --text: #e0e0e0;
+      --text-muted: #888;
+      --primary: #00d4ff;
+      --success: #00ff88;
+      --danger: #ff3b30;
+      --off: #f87171;
+      --on: #34d399;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --glow: 0 0 20px rgba(0, 212, 255, 0.4);
     }
 
-    /* Responsive layout */
-    #dashboard {
-      display: none;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f1116 0%, #1a1d2e 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
+
+    h1 {
+      font-size: 2.4rem;
+      background: linear-gradient(90deg, #00d4ff, #00ff88);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-align: center;
+      margin: 30px 0 40px;
+      text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    }
+
+    /* LOGIN */
     #loginForm {
-      max-width: 400px;
-      margin: 80px auto 20px;
-      background: #DDDDDD;
-      padding: 30px 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      max-width: 420px;
+      margin: 60px auto;
+      background: var(--card);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: var(--shadow), var(--glow);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 212, 255, 0.2);
     }
+
     #loginForm input {
       width: 100%;
-      padding: 12px 15px;
-      margin: 10px 0 20px;
+      padding: 14px 18px;
+      margin: 12px 0 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 12px;
+      color: white;
       font-size: 1rem;
-      border: 1.5px solid #ccc;
-      border-radius: 10px;
-      box-sizing: border-box;
-      outline-offset: 2px;
-      transition: border-color 0.3s ease;
+      transition: all 0.3s;
     }
     #loginForm input:focus {
-      border-color: #1e88e5;
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(0,212,255,0.5);
     }
+
     #loginForm button {
       width: 100%;
-      background-color: #1e88e5;
-      color: #DDDDDD;
-      padding: 12px;
-      font-size: 18px;
+      padding: 14px;
+      background: linear-gradient(45deg, #00d4ff, #00ff88);
+      color: black;
+      font-weight: bold;
+      font-size: 1.1rem;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(0,212,255,0.4);
     }
-    #loginForm button:hover {
-      background-color: #1565c0;
+    #loginForm button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,212,255,0.6); }
+
+    /* DASHBOARD */
+    #dashboard { display: none; }
+
+    .relay-container {
+      max-width: 1100px;
+      margin: 0 auto 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      padding: 0 10px;
     }
-    #dashboard .relay-container {
-      max-width: 960px;
-      margin: 20px auto 0;
+
+    .relay-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,212,255,0.15);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .relay-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .relay-card:hover::before { opacity: 1; }
+    .relay-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.6), var(--glow); }
+
+    .relay-card i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      background: linear-gradient(45deg, var(--primary), var(--success));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .relay-card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .status {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin: 15px 0;
+      padding: 8px 16px;
+      border-radius: 50px;
+      display: inline-block;
+      min-width: 100px;
+    }
+    .status.on {
+      background: rgba(52, 211, 153, 0.2);
+      color: var(--on);
+      box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
+    }
+    .status.off {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--off);
+    }
+
+    .relay-card button {
+      width: 100%;
+      padding: 16px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .relay-card button.on {
+      background: linear-gradient(45deg, #10b981, #34d399);
+      color: white;
+      box-shadow: 0 0 20px rgba(52,211,153,0.5);
+    }
+    .relay-card button.off {
+      background: linear-gradient(45deg, #64748b, #94a3b8);
+      color: white;
+    }
+    .relay-card button:hover { transform: scale(1.05); }
+
+    /* Przyciski globalne */
+    .global-buttons {
       display: flex;
       flex-wrap: wrap;
+      gap: 15px;
       justify-content: center;
+      margin: 30px 0;
     }
-    /* Smaller devices */
-    @media (max-width: 700px) {
-      .relay-card {
-        width: 90%;
-        margin: 10px auto;
-        display: block;
-      }
-      body {
-        padding: 0 10px 60px;
-      }
+    .global-buttons button {
+      padding: 14px 30px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      min-width: 200px;
     }
+    #allOffBtn {
+      background: linear-gradient(45deg, #ef4444, #f87171);
+      color: white;
+      box-shadow: 0 0 20px rgba(239,68,68,0.4);
+    }
+    #logoutBtn {
+      background: #374151;
+      color: white;
+    }
+    .global-buttons button:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+
     footer {
+      text-align: center;
+      padding: 20px;
+      color: #555;
       font-size: 0.9rem;
-      color: #666;
-      padding: 10px 0;
-      margin-top: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .relay-card { padding: 20px; }
+      .global-buttons { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
 <body>
 
-  <h1>Oświetlenie nad biurkiem</h1>
+  <h1><i class="fas fa-lightbulb"></i> Oświetlenie biurka</h1>
 
-  <!-- Login form -->
+  <!-- Login -->
   <div id="loginForm">
-    <input type="email" id="email" placeholder="Enter Email" required />
-    <input type="password" id="password" placeholder="Enter Password" required />
-    <button id="loginBtn">Login</button>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Hasło" required />
+    <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> ZALOGUJ</button>
   </div>
 
   <!-- Dashboard -->
   <div id="dashboard">
     <div class="relay-container">
       <div class="relay-card">
+        <i class="fas fa-lightbulb"></i>
         <h2>Światło lewe</h2>
-        <p>Status: <span id="status1">Loading...</span></p>
+        <div class="status" id="status1">Loading...</div>
         <button id="btn1">Toggle</button>
       </div>
-
       <div class="relay-card">
-        <h2>Swiatło środkowe</h2>
-        <p>Status: <span id="status2">Loading...</span></p>
+        <i class="fas fa-lightbulb"></i>
+        <h2>Światło środkowe</h2>
+        <div class="status" id="status2">Loading...</div>
         <button id="btn2">Toggle</button>
       </div>
-
       <div class="relay-card">
+        <i class="fas fa-lightbulb"></i>
         <h2>Światło prawe</h2>
-        <p>Status: <span id="status3">Loading...</span></p>
+        <div class="status" id="status3">Loading...</div>
         <button id="btn3">Toggle</button>
       </div>
-
       <div class="relay-card">
+        <i class="fas fa-plug"></i>
         <h2>Gniazdka</h2>
-        <p>Status: <span id="status4">Loading...</span></p>
+        <div class="status" id="status4">Loading...</div>
         <button id="btn4">Toggle</button>
       </div>
     </div>
 
-    <button id="allOffBtn">Wyłącz wszystko</button>
-    <button id="logoutBtn">Wyloguj</button>
+    <div class="global-buttons">
+      <button id="allOffBtn"><i class="fas fa-power-off"></i> WYŁĄCZ WSZYSTKO</button>
+      <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Wyloguj</button>
+    </div>
   </div>
 
-  <footer>
-    Podjebka od Tech StudyCell
-  </footer>
+  <footer>Podjebka od Tech StudyCell © 2025</footer>
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-
   <script>
-    // Firebase config
-	  const firebaseConfig = {
-	  apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
-	  authDomain: "domek-52b6a.firebaseapp.com",
-	  databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
-	  projectId: "domek-52b6a",
-	  storageBucket: "domek-52b6a.firebasestorage.app",
-	  messagingSenderId: "641050671936",
-	  appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
-	};
-
+    const firebaseConfig = {
+      apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
+      authDomain: "domek-52b6a.firebaseapp.com",
+      databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "domek-52b6a",
+      storageBucket: "domek-52b6a.firebasestorage.app",
+      messagingSenderId: "641050671936",
+      appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
+    };
     firebase.initializeApp(firebaseConfig);
 
-    // Predefined login credentials (can be replaced with your logic)
     const allowedEmail = "joszrank@gmail.com";
     const allowedPassword = "LotyWChmurach";
 
     const loginForm = document.getElementById("loginForm");
     const dashboard = document.getElementById("dashboard");
-    const loginBtn = document.getElementById("loginBtn");
 
-    loginBtn.addEventListener("click", () => {
+    document.getElementById("loginBtn").addEventListener("click", () => {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
-      if (!email || !password) {
-        alert("Please enter email and password.");
-        return;
-      }
+      if (!email || !password) return alert("Wpisz email i hasło!");
 
-      // Check hardcoded credentials first
-      if(email === allowedEmail && password === allowedPassword){
-        // Sign in with Firebase
+      if (email === allowedEmail && password === allowedPassword) {
         firebase.auth().signInWithEmailAndPassword(email, password)
-          .then(userCredential => {
-            console.log("Signed in as", userCredential.user.email);
+          .then(() => {
             loginForm.style.display = "none";
             dashboard.style.display = "block";
             startRelayControl();
           })
-          .catch(error => {
-            alert("Firebase login failed: " + error.message);
-          });
+          .catch(err => alert("Błąd logowania: " + err.message));
       } else {
-        alert("Invalid email or password.");
+        alert("Zły email lub hasło!");
       }
     });
 
     function startRelayControl() {
       const db = firebase.database();
-
       const relays = [
         { id: 1, path: "b0" },
         { id: 2, path: "b1" },
         { id: 3, path: "b2" },
-        { id: 4, path: "b3" },
+        { id: 4, path: "b3" }
       ];
 
-      relays.forEach(relay => {
-        const statusText = document.getElementById(`status${relay.id}`);
-        const toggleButton = document.getElementById(`btn${relay.id}`);
-        const relayRef = db.ref("/" + relay.path);
+      relays.forEach(r => {
+        const statusEl = document.getElementById(`status${r.id}`);
+        const btn = document.getElementById(`btn${r.id}`);
+        const ref = db.ref("/" + r.path);
 
-        relayRef.on("value", (snapshot) => {
-          const state = snapshot.val();
-          statusText.innerText = state ? "ON" : "OFF";
-          toggleButton.style.backgroundColor = state ? "#3A6F43" : "#808B97";
+        ref.on("value", snap => {
+          const state = snap.val();
+          statusEl.textContent = state ? "ON" : "OFF";
+          statusEl.className = "status " + (state ? "on" : "off");
+          btn.textContent = state ? "WYŁĄCZ" : "WŁĄCZ";
+          btn.className = state ? "on" : "off";
         });
 
-        toggleButton.onclick = () => {
-          relayRef.get().then(snap => {
-            relayRef.set(!snap.val());
-          });
-        };
+        btn.onclick = () => ref.get().then(s => ref.set(!s.val()));
       });
 
       document.getElementById("allOffBtn").onclick = () => {
-        relays.forEach(relay => {
-          db.ref("/" + relay.path).set(false);
-        });
+        relays.forEach(r => db.ref("/" + r.path).set(false));
       };
     }
 
     document.getElementById("logoutBtn").onclick = () => {
-      firebase.auth().signOut()
-        .then(() => {
-          dashboard.style.display = "none";
-          loginForm.style.display = "block";
-          document.getElementById("email").value = "";
-          document.getElementById("password").value = "";
-        })
-        .catch(error => {
-          alert("Logout failed: " + error.message);
-        });
+      firebase.auth().signOut().then(() => {
+        dashboard.style.display = "none";
+        loginForm.style.display = "block";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+      });
     };
   </script>
 </body>
-
 </html>
-
-
-
-
-
-
-
