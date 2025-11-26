@@ -1,285 +1,160 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Sterowanie oświetleniem domu</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <title>Sterowanie domem</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root {
-      --bg: #0f1116;
-      --card: #1a1d24;
-      --text: #e0e0e0;
-      --primary: #00d4ff;
-      --success: #00ff88;
-      --on: #34d399;
-      --off: #f87171;
-      --shadow: 0 8px 32px rgba(0,0,0,0.4);
-      --glow: 0 0 20px rgba(0,212,255,0.4);
-      --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    :root{
+      --bg:#0f1116;--card:#1a1d24;--text:#e0e0e0;--primary:#00d4ff;--success:#00ff88;
+      --on:#34d399;--off:#f87171;--shadow:0 8px 32px rgba(0,0,0,0.4);
+      --glow:0 0 20px rgba(0,212,255,0.4);--transition:all .35s cubic-bezier(.4,0,.2,1);
     }
+    body.night-mode{--bg:#050507;--card:#0e0e12;--text:#555;--primary:#ff2e63;--success:#08f8a0;--on:#08f8a0;--off:#ff3366;--glow:0 0 15px rgba(255,46,99,0.3);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,var(--bg),#1a1d2e);color:var(--text);min-height:100vh;padding:20px 10px;transition:var(--transition);}
+    
+    .theme-toggle{position:fixed;top:20px;right:20px;z-index:9999;width:56px;height:56px;border-radius:50%;background:rgba(30,30,40,.9);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,.1);box-shadow:0 4px 15px rgba(0,0,0,.5);transition:var(--transition);}
+    .theme-toggle:hover{transform:scale(1.15);}
+    .theme-toggle i{font-size:1.5rem;color:var(--primary);}
 
-    body.night-mode {
-      --bg: #050507;
-      --card: #0e0e12;
-      --text: #555;
-      --primary: #ff2e63;
-      --success: #08f8a0;
-      --on: #08f8a0;
-      --off: #ff3366;
-      --glow: 0 0 15px rgba(255,46,99,0.3);
-    }
+    h1{text-align:center;font-size:2.6rem;margin:20px 0 10px;background:linear-gradient(90deg,var(--primary),var(--success));-webkit-background-clip:text;background-clip:text;color:transparent;}
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, var(--bg), #1a1d2e);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 20px 10px;
-      transition: var(--transition);
-    }
+    .tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:20px 0 40px;}
+    .tab{padding:14px 28px;background:var(--card);border-radius:14px;cursor:pointer;font-weight:bold;transition:var(--transition);display:flex;align-items:center;gap:10px;}
+    .tab.active{background:linear-gradient(45deg,var(--primary),var(--success));color:#000;}
 
-    .theme-toggle {
-      position: fixed; top: 20px; right: 20px; z-index: 1000;
-      width: 56px; height: 56px; border-radius: 50%; background: rgba(30,30,40,0.8);
-      display: flex; align-items:center; justify-content:center; cursor:pointer;
-      border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      transition: var(--transition);
-    }
-    .theme-toggle:hover { transform: scale(1.1); }
-    .theme-toggle i { font-size: 1.5rem; color: var(--primary); }
+    .room{display:none;opacity:0;transition:opacity .4s var(--transition);}
+    .room.active{display:block;opacity:1;}
 
-    h1 {
-      text-align: center; font-size: 2.5rem; margin: 30px 0 20px;
-      background: linear-gradient(90deg, var(--primary), var(--success));
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
+    .relay-container{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
+    .relay-card{background:var(--card);border-radius:20px;padding:28px;text-align:center;box-shadow:var(--shadow);border:1px solid rgba(0,212,255,.15);transition:var(--transition);}
+    .relay-card:hover{transform:translateY(-10px);box-shadow:var(--glow),var(--shadow);}
 
-    /* Menu zakładek */
-    .tabs {
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 30px;
-    }
-    .tab {
-      padding: 12px 24px; background: var(--card); border-radius: 12px;
-      cursor: pointer; transition: var(--transition); font-weight: bold;
-    }
-    .tab.active {
-      background: linear-gradient(45deg, var(--primary), var(--success));
-      color: #000;
-    }
+    @keyframes pulseOn{0%{box-shadow:var(--shadow),0 0 0 rgba(52,211,153,0);}60%{box-shadow:var(--shadow),0 0 40px rgba(52,211,153,.9);transform:scale(1.04);}100%{box-shadow:var(--shadow),0 0 18px rgba(52,211,153,.4);}}
+    @keyframes pulseOff{0%{box-shadow:var(--shadow),0 0 35px rgba(248,113,113,.7);}100%{box-shadow:var(--shadow);}}
+    .relay-card.turning-on{animation:pulseOn .45s ease-out;}
+    .relay-card.turning-off{animation:pulseOff .35s ease-out;}
 
-    .room { display: none; }
-    .room.active { display: block; }
+    .relay-card i{font-size:3rem;background:linear-gradient(45deg,var(--primary),var(--success));-webkit-background-clip:text;color:transparent;margin-bottom:12px;}
+    .status{font-size:1.3rem;font-weight:bold;padding:8px 20px;border-radius:50px;min-width:100px;transition:var(--transition);}
+    .status.on{background:rgba(52,211,153,.2);color:var(--on);box-shadow:0 0 18px rgba(52,211,153,.4);}
+    .status.off{background:rgba(248,113,113,.2);color:var(--off);}
 
-    .relay-container {
-      max-width: 1200px; margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
+    .relay-card button{width:100%;padding:16px;margin-top:16px;border:none;border-radius:14px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:var(--transition);}
+    .relay-card button.on{background:linear-gradient(45deg,#10b981,#34d399);box-shadow:0 0 20px rgba(52,211,153,.6);}
+    .relay-card button.off{background:linear-gradient(45deg,#64748b,#94a3b8);}
+    .relay-card button:hover{transform:scale(1.05);}
 
-    .relay-card {
-      background: var(--card); border-radius: 20px; padding: 28px; text-align: center;
-      box-shadow: var(--shadow); border: 1px solid rgba(0,212,255,0.15);
-      transition: var(--transition);
-    }
-    .relay-card:hover { transform: translateY(-8px); box-shadow: var(--glow), var(--shadow); }
+    .room-controls{text-align:center;margin:40px 0;}
+    .room-controls button{padding:16px 36px;border:none;border-radius:14px;font-size:1.2rem;font-weight:bold;cursor:pointer;min-width:260px;display:inline-flex;align-items:center;justify-content:center;gap:12px;transition:var(--transition);}
+    .all-toggle{background:linear-gradient(45deg,#8b5cf6,#ec4899);box-shadow:0 0 25px rgba(139,92,246,.5);}
+    .all-toggle.all-on{background:linear-gradient(45deg,#ef4444,#f87171)!important;box-shadow:0 0 25px rgba(239,68,68,.6)!important;}
+    .room-controls button:hover{transform:translateY(-5px) scale(1.03);}
 
-    @keyframes pulseOn {
-      0%   { box-shadow: var(--shadow), 0 0 0 rgba(52,211,153,0); }
-      60%  { box-shadow: var(--shadow), 0 0 40px rgba(52,211,153,0.9); transform: scale(1.04); }
-      100% { box-shadow: var(--shadow), 0 0 18px rgba(52,211,153,0.4); }
-    }
-    @keyframes pulseOff {
-      0%   { box-shadow: var(--shadow), 0 0 35px rgba(248,113,113,0.7); }
-      100% { box-shadow: var(--shadow); }
-    }
-    .relay-card.turning-on  { animation: pulseOn 0.45s ease-out; }
-    .relay-card.turning-off { animation: pulseOff 0.35s ease-out; }
-
-    .relay-card i { font-size: 3rem; background: linear-gradient(45deg, var(--primary), var(--success));
-      -webkit-background-clip: text; color: transparent; margin-bottom: 12px; }
-
-    .status {
-      font-size: 1.3rem; font-weight: bold; padding: 8px 18px; border-radius: 50px;
-      display: inline-block; min-width: 100px; transition: var(--transition);
-    }
-    .status.on  { background: rgba(52,211,153,0.2); color: var(--on); box-shadow: 0 0 18px rgba(52,211,153,0.4); }
-    .status.off { background: rgba(248,113,113,0.2); color: var(--off); }
-
-    .relay-card button {
-      width: 100%; padding: 16px; margin-top: 16px; border: none;
-      border-radius: 14px; font-size: 1.1rem; font-weight: bold;
-      cursor: pointer; transition: var(--transition);
-    }
-    .relay-card button.on  { background: linear-gradient(45deg, #10b981, #34d399); box-shadow: 0 0 20px rgba(52,211,153,0.6); }
-    .relay-card button.off { background: linear-gradient(45deg, #64748b, #94a3b8); }
-
-    .room-controls {
-      text-align: center; margin: 30px 0;
-    }
-    .room-controls button {
-      padding: 14px 32px; border: none; border-radius: 12px;
-      font-size: 1.1rem; font-weight: bold; cursor: pointer;
-      min-width: 240px; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      transition: var(--transition);
-    }
-    #allBiurko, #allPracownia, #allPokoj, #allSalon {
-      background: linear-gradient(45deg, #8b5cf6, #ec4899);
-      box-shadow: 0 0 20px rgba(139,92,246,0.5);
-    }
-    .all-on { background: linear-gradient(45deg, #ef4444, #f87171) !important; box-shadow: 0 0 20px rgba(239,68,68,0.6) !important; }
-
-    footer { text-align:center; padding:30px; color:#555; }
+    footer{text-align:center;padding:30px;color:#666;font-size:.9rem;}
   </style>
 </head>
 <body>
 
   <div class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></div>
-
   <h1>Sterowanie oświetleniem domu</h1>
 
   <div class="tabs">
-    <div class="tab active" data-room="biurko">Biurko</div>
-    <div class="tab" data-room="pracownia">Pracownia</div>
-    <div class="tab" data-room="pokoj">Pokój</div>
-    <div class="tab" data-room="salon">Salon</div>
+    <div class="tab active" data-room="biurko"><i class="fas fa-desktop"></i> Biurko</div>
+    <div class="tab" data-room="pracownia"><i class="fas fa-tools"></i> Pracownia</div>
+    <div class="tab" data-room="pokoj"><i class="fas fa-bed"></i> Pokój</div>
+    <div class="tab" data-room="salon"><i class="fas fa-couch"></i> Salon</div>
   </div>
 
-  <!-- BIURKO -->
-  <div id="biurko" class="room active">
-    <div class="relay-container" id="biurko-lights"></div>
-    <div class="room-controls"><button id="allBiurko">Sprawdzanie...</button></div>
-  </div>
-
-  <!-- PRACOWNIA -->
-  <div id="pracownia" class="room">
-    <div class="relay-container" id="pracownia-lights"></div>
-    <div class="room-controls"><button id="allPracownia">Sprawdzanie...</button></div>
-  </div>
-
-  <!-- POKÓJ -->
-  <div id="pokoj" class="room">
-    <div class="relay-container" id="pokoj-lights"></div>
-    <div class="room-controls"><button id="allPokoj">Sprawdzanie...</button></div>
-  </div>
-
-  <!-- SALON -->
-  <div id="salon" class="room">
-    <div class="relay-container" id="salon-lights"></div>
-    <div class="room-controls"><button id="allSalon">Sprawdzanie...</button></div>
-  </div>
+  <div id="biurko" class="room active"><div class="relay-container" id="biurko-container"></div><div class="room-controls"><button class="all-toggle" id="allBiurko"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
+  <div id="pracownia" class="room"><div class="relay-container" id="pracownia-container"></div><div class="room-controls"><button class="all-toggle" id="allPracownia"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
+  <div id="pokoj" class="room"><div class="relay-container" id="pokoj-container"></div><div class="room-controls"><button class="all-toggle" id="allPokoj"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
+  <div id="salon" class="room"><div class="relay-container" id="salon-container"></div><div class="room-controls"><button class="all-toggle" id="allSalon"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
 
   <footer>Tech StudyCell © 2025</footer>
 
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script>
-    // === TRYB NOCNY ===
-    const themeToggle = document.getElementById('themeToggle');
-    if (localStorage.getItem('nightMode') === 'true') {
-      document.body.classList.add('night-mode');
-      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    }
-    themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('night-mode');
-      const isNight = document.body.classList.contains('night-mode');
-      themeToggle.innerHTML = isNight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-      localStorage.setItem('nightMode', isNight);
-    });
+    // Tryb nocny
+    const toggle = document.getElementById('themeToggle');
+    if (localStorage.getItem('nightMode')==='true') { document.body.classList.add('night-mode'); toggle.innerHTML='<i class="fas fa-sun"></i>'; }
+    toggle.addEventListener('click',()=>{document.body.classList.toggle('night-mode');const n=document.body.classList.contains('night-mode');toggle.innerHTML=n?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>';localStorage.setItem('nightMode',n);});
 
-    // === FIREBASE ===
-    const firebase.initializeApp({
+    // Firebase
+    firebase.initializeApp({
       apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
       authDomain: "domek-52b6a.firebaseapp.com",
       databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "domek-52b6a",
-      storageBucket: "domek-52b6a.firebasestorage.app",
-      messagingSenderId: "641050671936",
-      appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
+      projectId: "domek-52b6a", storageBucket: "domek-52b6a.firebasestorage.app",
+      messagingSenderId: "641050671936", appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
     });
-
     const db = firebase.database();
 
-    // Konfiguracja pomieszczeń – łatwo dodać kolejne!
     const rooms = {
-      biurko:     { start: 0,  name: "Biurko",     lights: 3, sockets: 1 },
-      pracownia:  { start: 4,  name: "Pracownia",  lights: 3, sockets: 3 },
-      pokoj:      { start: 7,  name: "Pokój",       lights: 3, sockets: 3 },
-      salon:      { start: 10, name: "Salon",      lights: 3, sockets: 3 }
+      biurko:    { start:0,  lights:3, sockets:1, icon:'desktop' },
+      pracownia: { start:4,  lights:3, sockets:3, icon:'tools' },
+      pokoj:     { start:7,  lights:3, sockets:3, icon:'bed' },
+      salon:     { start:10, lights:3, sockets:3, icon:'couch' }
     };
 
-    Object.keys(rooms).forEach(roomId => {
-      const container = document.getElementById(roomId + '-lights');
-      const allBtn = document.getElementById('all' + roomId.charAt(0).toUpperCase() + roomId.slice(1));
-      const config = rooms[roomId];
-      const states = new Array(config.lights + config.sockets).fill(false);
+    Object.entries(rooms).forEach(([id, cfg]) => {
+      const container = document.getElementById(id + '-container');
+      const allBtn = document.getElementById('all' + id.charAt(0).toUpperCase() + id.slice(1));
+      const states = [];
 
-      // Generowanie kart
-      for (let i = 0; i < config.lights + config.sockets; i++) {
-        const idx = config.start + i;
-        const isLight = i < config.lights;
-        const title = isLight 
-          ? ["Światło lewe","Światło środkowe","Światło prawe"][i] || `Światło ${i+1}` 
-          : `Gniazdko ${i-config.lights+1}`;
+      for (let i=0; i<cfg.lights+cfg.sockets; i++) {
+        const idx = cfg.start + i;
+        const isLight = i < cfg.lights;
+        const name = isLight 
+          ? (i===0?"Lewe":i===1?"Środkowe":i===2?"Prawe":"Światło "+(i+1))
+          : "Gniazdko "+(i-cfg.lights+1);
 
-        const card = document.createElement('div');
-        card.className = 'relay-card';
-        card.innerHTML = `
-          <i class="${isLight ? 'fas fa-lightbulb' : 'fas fa-plug'}"></i>
-          <h2>${title}</h2>
-          <div class="status" id="status${idx}">Loading...</div>
-          <button id="btn${idx}">Ładowanie...</button>
-        `;
+        const card = document.createElement('div'); card.className='relay-card';
+        card.innerHTML = `<i class="fas fa-${isLight?'lightbulb':'plug'}"></i><h2>${name}</h2><div class="status" id="s${idx}">Ładowanie...</div><button id="b${idx}">Ładowanie...</button>`;
         container.appendChild(card);
 
-        const statusEl = document.getElementById(`status${idx}`);
-        const btn = document.getElementById(`btn${idx}`);
-        const ref = db.ref(`/b${idx}`);
+        const status = document.getElementById('s'+idx);
+        const btn = document.getElementById('b'+idx);
+        const ref = db.ref('/b'+idx);
 
-        ref.on('value', snap => {
-          const state = snap.val() === true;
+        ref.on('value', s => {
+          const state = s.val() === true;
           states[i] = state;
-          statusEl.textContent = state ? "ON" : "OFF";
-          statusEl.className = "status " + (state ? "on" : "off");
-          btn.textContent = state ? "WYŁĄCZ" : " : "WŁĄCZ";
-          btn.className = state ? "on" : "off";
+          status.textContent = state?"ON":"OFF";
+          status.className = "status "+(state?"on":"off");
+          btn.textContent = state?"WYŁĄCZ":"WŁĄCZ";
+          btn.className = state?"on":"off";
 
-          if (state !== (states[i] === true)) { // zmiana stanu → animacja
+          if (state !== states[i-1===-1?0:i-1]) {
             card.classList.remove('turning-on','turning-off');
             void card.offsetWidth;
-            card.classList.add(state ? 'turning-on' : 'turning-off');
+            card.classList.add(state?'turning-on':'turning-off');
           }
 
-          // Aktualizacja przycisku "Wszystko"
-          const allOn = states.every(s => s);
-          allBtn.textContent = allOn ? "WYŁĄCZ WSZYSTKO" : "WŁĄCZ WSZYSTKO";
+          const allOn = states.every(x=>x);
+          allBtn.innerHTML = `<i class="fas fa-${allOn?'power-off':'bolt'}"></i> ${allOn?'WYŁĄCZ WSZYSTKO':'WŁĄCZ WSZYSTKO'}`;
           allBtn.classList.toggle('all-on', allOn);
         });
 
-        btn.onclick = () => ref.get().then(s => ref.set(!s.val()));
+        btn.onclick = () => ref.get().then(s=>ref.set(!s.val()));
       }
 
-      // Przycisk wszystko w danym pomieszczeniu
       allBtn.onclick = () => {
-        const target = states.every(s => s) ? false : true;
-        for (let i = 0; i < states.length; i++) {
-          db.ref(`/b${config.start + i}`).set(target);
-        }
+        const target = states.every(x=>x) ? false : true;
+        for (let i=0; i<states.length; i++) db.ref('/b'+(cfg.start+i)).set(target);
       };
     });
 
-    // Przełączanie zakładek
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.room).classList.add('active');
-      });
-    });
+    // Zakładki
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.room').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.room).classList.add('active');
+    }));
   </script>
 </body>
 </html>
