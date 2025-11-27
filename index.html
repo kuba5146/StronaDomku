@@ -3,241 +3,333 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sterowanie oświetleniem biurka</title>
+  <title>Sterowanie domem • Tech StudyCell</title>
 
-  <!-- Google Fonts + Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
     :root {
-      --bg: #0f172a;           /* ciemne tło */
-      --card: #1e293b;
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
-      --primary: #3b82f6;
-      --green: #10b981;
+      /* Ciemny motyw premium (domyślny) */
+      --bg: #0a0e1a;
+      --card: rgba(20,25,40,0.65);
+      --card-on: rgba(25,35,55,0.95);
+      --glow: #00ff88;
+      --glow-soft: rgba(0,255,136,0.18);
+      --text: #f0f4ff;
+      --text-secondary: #94a3b8;
+      --primary: #6366f1;
       --red: #ef4444;
-      --yellow: #f59e0b;
-      --border: #334155;
+      --border: rgba(80,100,150,0.25);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* JAŚNIEJSZY ZIELONY MOTYW – przyjemny dla oka */
+    body.light-mode {
+      --bg: #c8d7c1;            /* jasny zielonkawy */
+      --card: #ffffff;           /* czysta biel kart */
+      --card-on: #f8fffb;        /* delikatnie zielonkawa biel przy włączonym */
+      --glow: #2d8c47;           /* głęboka, elegancka zieleń */
+      --glow-soft: rgba(45,140,71,0.22);
+      --text: #1a1a1a;
+      --text-secondary: #444444;
+      --primary: #2d8c47;        /* zielony pasujący do glow */
+      --red: #c62828;
+      --border: #a8b8a2;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      font-family: 'Inter', Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       padding: 20px 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      transition: background 0.6s ease, color 0.6s ease;
     }
 
-    h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
+    /* PRZEŁĄCZNIK MOTYWU */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.12);
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      transition: all 0.4s ease;
+    }
+    body.light-mode .theme-toggle { background: rgba(0,0,0,0.08); }
+    .theme-toggle:hover { transform: scale(1.15); }
+    .theme-toggle i { font-size: 1.8rem; color: var(--text); }
+
+    /* TYTUŁ */
+    .title-container {
       text-align: center;
-      margin: 30px 0 40px;
-      background: linear-gradient(to right, #60a5fa, #c084fc);
+      margin: 70px 0 50px;
+    }
+    h1 {
+      font-size: 3.6rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #60a5fa, #a78bfa, #f0abfc, #a78bfa, #60a5fa);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titleFlow 12s linear infinite;
+      letter-spacing: -1px;
+    }
+    body.light-mode h1 {
+      background: linear-gradient(90deg, #2d8c47, #3aa355, #2d8c47);
+      background-size: 200%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    @keyframes titleFlow { 0% { background-position: 0%; } 100% { background-position: 200%; } }
+    .lights-on h1 { animation: titleFlow 12s linear infinite, titleGlow 3s ease-in-out infinite; }
+    @keyframes titleGlow { 0%,100% { filter: drop-shadow(0 0 16px var(--glow-soft)); } 50% { filter: drop-shadow(0 0 32px var(--glow-soft)); } }
 
-    /* LOGIN */
-    #loginForm {
-      max-width: 420px;
-      margin: 60px auto;
-      background: var(--card);
-      padding: 40px 30px;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      border: 1px solid var(--border);
+    /* ZAKŁADKI Z IKONKAMI */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 20px auto 50px;
+      flex-wrap: wrap;
+      max-width: 1000px;
     }
-    #loginForm input {
-      width: 100%;
-      padding: 14px 16px;
-      margin: 12px 0;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: white;
-      font-size: 1rem;
-      transition: all 0.3s;
-    }
-    #loginForm input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
-    }
-    #loginForm button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 20px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 600;
+    .tab {
+      padding: 16px;
+      background: rgba(30,35,55,0.55);
+      border: 2px solid transparent;
+      border-radius: 50%;
+      font-size: 2.2rem;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 70px;
+      height: 70px;
     }
-    #loginForm button:hover { background: #2563eb; transform: translateY(-2px); }
+    body.light-mode .tab {
+      background: rgba(255,255,255,0.85);
+      color: #1a1a1a;
+      border-color: #d0d8cc;
+    }
+    .tab i {
+      color: var(--text);
+    }
+    body.light-mode .tab i {
+      color: #2d8c47;
+    }
+    .tab.active {
+      background: rgba(99,102,241,0.35);
+      border-color: var(--primary);
+      transform: scale(1.15);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+    body.light-mode .tab.active {
+      background: rgba(45,140,71,0.25);
+      border-color: var(--primary);
+    }
 
-    /* DASHBOARD */
-    #dashboard { display: none; }
+    /* POKOJE */
+    .room { display: none; animation: fadeIn 0.6s ease; }
+    .room.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
     .relay-container {
-      max-width: 1100px;
-      margin: 0 auto 40px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-      padding: 0 10px;
+      max-width: 1200px; margin: 0 auto 60px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px; padding: 0 10px;
     }
 
     .relay-card {
       background: var(--card);
-      border-radius: 20px;
-      padding: 24px;
+      border-radius: 32px;
+      padding: 50px 25px;
       text-align: center;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .relay-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    }
-
-    .relay-card i {
-      font-size: 3.5rem;
-      margin-bottom: 16px;
-      opacity: 0.9;
-    }
-
-    .relay-card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .relay-card .status {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin: 12px 0;
-      padding: 6px 12px;
-      border-radius: 8px;
-      display: inline-block;
-      min-width: 80px;
-    }
-    .status.on  { background: rgba(16,185,129,0.2); color: var(--green); }
-    .status.off { background: rgba(148,163,184,0.2); color: #cbd5e1; }
-
-    .relay-card button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 16px;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: white;
+      border: 2px solid var(--border);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+      transition: all 0.35s ease;
       cursor: pointer;
-      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
-    .relay-card button.on  { background: var(--green); }
-    .relay-card button.off { background: #475569; }
-    .relay-card button:hover { transform: translateY(-2px); opacity: 0.9; }
+    .relay-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 20%, var(--glow-soft) 0%, transparent 70%);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .relay-card.on::before { opacity: 1; }
+    .relay-card.on {
+      border-color: var(--glow);
+      background: var(--card-on);
+      transform: translateY(-10px);
+      box-shadow: 0 0 50px var(--glow-soft), 0 25px 60px rgba(0,0,0,0.2);
+    }
+    .relay-card:hover { transform: translateY(-18px) scale(1.04); }
 
-    /* Global buttons */
-    .global-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      justify-content: center;
-      margin: 30px 0;
-    }
-    .global-buttons button {
-      padding: 14px 32px;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      cursor: pointer;
-      color: white;
-      min-width: 200px;
-      transition: all 0.3s;
-    }
-    #allOffBtn { background: var(--red); }
-    #logoutBtn { background: #64748b; }
-    .global-buttons button:hover { transform: translateY(-3px); opacity: 0.9; }
+    .relay-card i { font-size: 6.5rem; margin-bottom: 20px; transition: all 0.4s; }
+    .relay-card.off i { color: var(--text-secondary); }
+    .relay-card.on i { color: var(--glow); filter: drop-shadow(0 0 50px var(--glow)); animation: glowPulse 2.5s infinite alternate; }
+    @keyframes glowPulse { from { filter: drop-shadow(0 0 50px var(--glow)); } to { filter: drop-shadow(0 0 75px var(--glow)); } }
 
-    footer {
+    .relay-card h2 { font-size: 1.7rem; font-weight: 700; }
+
+    .room-controls {
       text-align: center;
-      padding: 20px;
-      color: var(--text-muted);
-      font-size: 0.9rem;
+      margin: 60px 0;
     }
+    .room-controls button {
+      padding: 20px 50px; border: none; border-radius: 24px;
+      font-weight: 700; font-size: 1.4rem; color: white; cursor: pointer;
+      min-width: 280px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      transition: all 0.35s;
+    }
+    .room-controls button.all-on { background: linear-gradient(135deg, var(--red), #b71c1c); }
+    .room-controls button.not-all-on { background: linear-gradient(135deg, #10b981, #059669); }
+    body.light-mode .room-controls button.not-all-on { background: linear-gradient(135deg, #2d8c47, #236b38); }
+    .room-controls button:hover { transform: translateY(-6px) scale(1.04); }
 
-    /* Animacja przy ładowaniu */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .ripple { position:absolute; border-radius:50%; background: radial-gradient(circle, var(--glow-soft) 10%, transparent 70%);
+      transform:scale(0); animation: ripple-anim 0.6s ease-out; pointer-events:none; }
+    @keyframes ripple-anim { to { transform:scale(5); opacity:0; } }
+
+    #loginForm {
+      max-width: 420px; margin: 60px auto; padding: 50px 40px;
+      background: var(--card); border-radius: 28px; backdrop-filter: blur(16px);
+      border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.6);
     }
-    .relay-card { animation: fadeIn 0.6s ease-out forwards; }
+    #loginForm input {
+      width: 100%; padding: 18px; margin: 14px 0; background: var(--card-on);
+      border: 1px solid var(--border); border-radius: 16px; color: var(--text);
+      font-size: 1.1rem; transition: 0.3s;
+    }
+    #loginForm input:focus {
+      outline: none; border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(25,118,210,0.3);
+    }
+    #loginForm button {
+      width: 100%; padding: 18px; margin-top: 25px;
+      background: var(--primary); color: white; border: none;
+      border-radius: 16px; font-size: 1.3rem; font-weight: 700;
+      cursor: pointer; box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+      transition: all 0.35s;
+    }
+    #loginForm button:hover { transform: translateY(-4px); }
+
+    #dashboard { display: none; }
+    footer { text-align: center; padding: 60px; color: var(--text-secondary); font-size: 1rem; }
   </style>
 </head>
 <body>
 
-  <h1>Oświetlenie nad biurkiem</h1>
+  <button class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </button>
 
-  <!-- LOGIN -->
+  <div class="title-container" id="titleContainer">
+    <h1>Sterowanie domem</h1>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-room="biurko"><i class="fas fa-desktop"></i></div>
+    <div class="tab" data-room="salon"><i class="fas fa-couch"></i></div>
+    <div class="tab" data-room="kuchnia"><i class="fas fa-utensils"></i></div>
+    <div class="tab" data-room="sypialnia"><i class="fas fa-bed"></i></div>
+    <div class="tab" data-room="pracownia"><i class="fas fa-tools"></i></div>
+  </div>
+
   <div id="loginForm">
     <input type="email" id="email" placeholder="Email" required />
     <input type="password" id="password" placeholder="Hasło" required />
     <button id="loginBtn">Zaloguj się</button>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="dashboard">
-    <div class="relay-container">
-      <!-- 1 -->
-      <div class="relay-card">
-        <i class="fas fa-lightbulb" style="color:#facc15"></i>
-        <h2>Światło lewe</h2>
-        <div class="status" id="status1">Loading...</div>
-        <button id="btn1" class="off">Włącz</button>
+    <!-- BIURKO -->
+    <div class="room active" id="biurko">
+      <div class="relay-container">
+        <div class="relay-card off" data-path="biurko/b0"><i class="fas fa-lightbulb"></i><h2>Światło lewe</h2></div>
+        <div class="relay-card off" data-path="biurko/b1"><i class="fas fa-lightbulb"></i><h2>Światło środkowe</h2></div>
+        <div class="relay-card off" data-path="biurko/b2"><i class="fas fa-lightbulb"></i><h2>Światło prawe</h2></div>
+        <div class="relay-card off" data-path="biurko/b3"><i class="fas fa-plug"></i><h2>Gniazdka</h2></div>
       </div>
-
-      <!-- 2 -->
-      <div class="relay-card">
-        <i class="fas fa-lightbulb" style="color:#a78bfa"></i>
-        <h2>Światło środkowe</h2>
-        <div class="status" id="status2">Loading...</div>
-        <button id="btn2" class="off">Włącz</button>
-      </div>
-
-      <!-- 3 -->
-      <div class="relay-card">
-        <i class="fas fa-lightbulb" style="color:#38bdf8"></i>
-        <h2>Światło prawe</h2>
-        <div class="status" id="status3">Loading...</div>
-        <button id="btn3" class="off">Włącz</button>
-      </div>
-
-      <!-- 4 -->
-      <div class="relay-card">
-        <i class="fas fa-plug" style="color:#fb923c"></i>
-        <h2>Gniazdka</h2>
-        <div class="status" id="status4">Loading...</div>
-        <button id="btn4" class="off">Włącz</button>
+      <div class="room-controls">
+        <button class="room-all-toggle not-all-on" data-room="biurko">Włącz wszystko</button>
       </div>
     </div>
 
-    <div class="global-buttons">
-      <button id="allOffBtn">Wyłącz wszystko</button>
+    <!-- SALON -->
+    <div class="room" id="salon">
+      <div class="relay-container">
+        <div class="relay-card off" data-path="salon/s0"><i class="fas fa-lightbulb"></i><h2>Główne</h2></div>
+        <div class="relay-card off" data-path="salon/s1"><i class="fas fa-lightbulb"></i><h2>Kinkiet lewy</h2></div>
+        <div class="relay-card off" data-path="salon/s2"><i class="fas fa-lightbulb"></i><h2>Kinkiet prawy</h2></div>
+        <div class="relay-card off" data-path="salon/g0"><i class="fas fa-plug"></i><h2>Gniazdko TV</h2></div>
+        <div class="relay-card off" data-path="salon/g1"><i class="fas fa-plug"></i><h2>Gniazdko kanapa</h2></div>
+        <div class="relay-card off" data-path="salon/g2"><i class="fas fa-plug"></i><h2>Gniazdko stolik</h2></div>
+      </div>
+      <div class="room-controls">
+        <button class="room-all-toggle not-all-on" data-room="salon">Włącz wszystko</button>
+      </div>
+    </div>
+
+    <!-- KUCHNIA -->
+    <div class="room" id="kuchnia">
+      <div class="relay-container">
+        <div class="relay-card off" data-path="kuchnia/k0"><i class="fas fa-lightbulb"></i><h2>Główne</h2></div>
+        <div class="relay-card off" data-path="kuchnia/k1"><i class="fas fa-lightbulb"></i><h2>Blat lewy</h2></div>
+        <div class="relay-card off" data-path="kuchnia/k2"><i class="fas fa-lightbulb"></i><h2>Blat prawy</h2></div>
+        <div class="relay-card off" data-path="kuchnia/g0"><i class="fas fa-plug"></i><h2>Lodówka</h2></div>
+        <div class="relay-card off" data-path="kuchnia/g1"><i class="fas fa-plug"></i><h2>Ekspres</h2></div>
+        <div class="relay-card off" data-path="kuchnia/g2"><i class="fas fa-plug"></i><h2>Zmywarka</h2></div>
+      </div>
+      <div class="room-controls">
+        <button class="room-all-toggle not-all-on" data-room="kuchnia">Włącz wszystko</button>
+      </div>
+    </div>
+
+    <!-- SYPIALNIA -->
+    <div class="room" id="sypialnia">
+      <div class="relay-container">
+        <div class="relay-card off" data-path="sypialnia/p0"><i class="fas fa-lightbulb"></i><h2>Łóżko lewe</h2></div>
+        <div class="relay-card off" data-path="sypialnia/p1"><i class="fas fa-lightbulb"></i><h2>Łóżko prawe</h2></div>
+        <div class="relay-card off" data-path="sypialnia/p2"><i class="fas fa-lightbulb"></i><h2>Sufit</h2></div>
+        <div class="relay-card off" data-path="sypialnia/g0"><i class="fas fa-plug"></i><h2>Ładowarka L</h2></div>
+        <div class="relay-card off" data-path="sypialnia/g1"><i class="fas fa-plug"></i><h2>Ładowarka P</h2></div>
+        <div class="relay-card off" data-path="sypialnia/g2"><i class="fas fa-plug"></i><h2>Lampka</h2></div>
+      </div>
+      <div class="room-controls">
+        <button class="room-all-toggle not-all-on" data-room="sypialnia">Włącz wszystko</button>
+      </div>
+    </div>
+
+    <!-- PRACOWNIA -->
+    <div class="room" id="pracownia">
+      <div class="relay-container">
+        <div class="relay-card off" data-path="pracownia/w0"><i class="fas fa-lightbulb"></i><h2>LED listwa 1</h2></div>
+        <div class="relay-card off" data-path="pracownia/w1"><i class="fas fa-lightbulb"></i><h2>LED listwa 2</h2></div>
+        <div class="relay-card off" data-path="pracownia/w2"><i class="fas fa-lightbulb"></i><h2>Lampa stojąca</h2></div>
+        <div class="relay-card off" data-path="pracownia/g0"><i class="fas fa-plug"></i><h2>Drukarka</h2></div>
+        <div class="relay-card off" data-path="pracownia/g1"><i class="fas fa-plug"></i><h2>Monitor</h2></div>
+        <div class="relay-card off" data-path="pracownia/g2"><i class="fas fa-plug"></i><h2>Ładowarka</h2></div>
+      </div>
+      <div class="room-controls">
+        <button class="room-all-toggle not-all-on" data-room="pracownia">Włącz wszystko</button>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin:70px 0;">
       <button id="logoutBtn">Wyloguj</button>
     </div>
   </div>
@@ -264,64 +356,101 @@
     const allowedEmail = "joszrank@gmail.com";
     const allowedPassword = "LotyWChmurach";
 
-    const loginForm = document.getElementById("loginForm");
-    const dashboard = document.getElementById("dashboard");
+    // Przełącznik motywu
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      document.body.classList.toggle("light-mode");
+      const isLight = document.body.classList.contains("light-mode");
+      document.getElementById("themeToggle").innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
 
-    document.getElementById("loginBtn").addEventListener("click", () => {
+    // Logowanie
+    document.getElementById("loginBtn").onclick = () => {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-
-      if (!email || !password) return alert("Wpisz email i hasło");
+      if (!email || !password) return alert("Wpisz dane");
 
       if (email === allowedEmail && password === allowedPassword) {
         firebase.auth().signInWithEmailAndPassword(email, password)
           .then(() => {
-            loginForm.style.display = "none";
-            dashboard.style.display = "block";
-            startRelayControl();
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+            initTabs();
           })
-          .catch(err => alert("Błąd logowania Firebase: " + err.message));
-      } else {
-        alert("Niepoprawne dane logowania");
-      }
-    });
+          .catch(e => alert("Błąd: " + e.message));
+      } else alert("Złe dane");
+    };
 
-    function startRelayControl() {
+    function initTabs() {
       const db = firebase.database();
-      const relays = [
-        { id: 1, path: "b0", icon: "fa-lightbulb" },
-        { id: 2, path: "b1", icon: "fa-lightbulb" },
-        { id: 3, path: "b2", icon: "fa-lightbulb" },
-        { id: 4, path: "b3", icon: "fa-plug" }
-      ];
+      const titleContainer = document.getElementById("titleContainer");
 
-      relays.forEach(r => {
-        const statusEl = document.getElementById(`status${r.id}`);
-        const btn = document.getElementById(`btn${r.id}`);
-        const ref = db.ref("/" + r.path);
-
-        ref.on("value", snap => {
-          const state = snap.val();
-          statusEl.textContent = state ? "ON" : "OFF";
-          statusEl.className = "status " + (state ? "on" : "off");
-          btn.textContent = state ? "Wyłącz" : "Włącz";
-          btn.className = state ? "on" : "off";
-        });
-
-        btn.onclick = () => ref.get().then(s => ref.set(!s.val()));
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.onclick = () => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(tab.dataset.room).classList.add('active');
+        };
       });
 
-      document.getElementById("allOffBtn").onclick = () => {
-        relays.forEach(r => db.ref("/" + r.path).set(false));
-      };
+      const rooms = ["biurko", "salon", "kuchnia", "sypialnia", "pracownia"];
+
+      rooms.forEach(room => {
+        const cards = document.querySelectorAll(`#${room} .relay-card`);
+        const allBtn = document.querySelector(`#${room} .room-all-toggle`);
+        let states = {};
+
+        cards.forEach(card => {
+          const path = card.dataset.path;
+          const ref = db.ref(path);
+
+          ref.on("value", snap => {
+            const on = snap.val() === true;
+            states[path] = on;
+            card.classList.toggle("on", on);
+            card.classList.toggle("off", !on);
+
+            const allOn = Object.values(states).every(v => v === true);
+            allBtn.textContent = allOn ? "Wyłącz wszystko" : "Włącz wszystko";
+            allBtn.classList.toggle("all-on", allOn);
+            allBtn.classList.toggle("not-all-on", !allOn);
+
+            const anyOnInHouse = rooms.some(r => 
+              Array.from(document.querySelectorAll(`#${r} .relay-card`)).some(c => c.classList.contains('on'))
+            );
+            document.body.classList.toggle("lights-on", anyOnInHouse);
+            titleContainer.classList.toggle("lights-on", anyOnInHouse);
+          });
+
+          card.onclick = e => {
+            const ripple = document.createElement("span");
+            const rect = card.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height) * 2.5;
+            ripple.style.width = ripple.style.height = size + "px";
+            ripple.style.left = (e.clientX - rect.left - size/2) + "px";
+            ripple.style.top = (e.clientY - rect.top - size/2) + "px";
+            ripple.classList.add("ripple");
+            card.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+
+            ref.get().then(s => ref.set(!s.val()));
+          };
+        });
+
+        allBtn.onclick = () => {
+          const allOn = Object.values(states).every(v => v === true);
+          cards.forEach(card => db.ref(card.dataset.path).set(!allOn));
+        };
+      });
     }
 
     document.getElementById("logoutBtn").onclick = () => {
       firebase.auth().signOut().then(() => {
-        dashboard.style.display = "none";
-        loginForm.style.display = "block";
+        document.getElementById("dashboard").style.display = "none";
+        document.getElementById("loginForm").style.display = "block";
         document.getElementById("email").value = "";
         document.getElementById("password").value = "";
+        document.body.classList.remove("lights-on");
       });
     };
   </script>
