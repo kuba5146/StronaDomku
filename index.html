@@ -1,158 +1,157 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>Sterowanie domem</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root{--bg:#0f1116;--card:#1a1d24;--text:#e0e0e0;--primary:#00d4ff;--success:#00ff88;--on:#34d399;--off:#f87171;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow:0 0 20px rgba(0,212,255,0.4);--t:all .35s cubic-bezier(.4,0,.2,1);}
-    body.night-mode{--bg:#050507;--card:#0e0e12;--text:#555;--primary:#ff2e63;--success:#08f8a0;--on:#08f8a0;--off:#ff3366;--glow:0 0 15px rgba(255,46,99,0.3);}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,var(--bg),#1a1d2e);color:var(--text);min-height:100vh;padding:20px 10px;transition:var(--t);}
-    .theme-toggle{position:fixed;top:20px;right:20px;z-index:9999;width:56px;height:56px;border-radius:50%;background:rgba(30,30,40,.9);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,.1);box-shadow:0 4px 15px rgba(0,0,0,.5);transition:var(--t);}
-    .theme-toggle:hover{transform:scale(1.15);}
-    .theme-toggle i{font-size:1.5rem;color:var(--primary);}
-    h1{text-align:center;font-size:2.6rem;margin:20px 0 10px;background:linear-gradient(90deg,var(--primary),var(--success));-webkit-background-clip:text;background-clip:text;color:transparent;}
-    .tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:20px 0 40px;}
-    .tab{padding:14px 28px;background:var(--card);border-radius:14px;cursor:pointer;font-weight:bold;transition:var(--t);display:flex;align-items:center;gap:10px;}
-    .tab.active{background:linear-gradient(45deg,var(--primary),var(--success));color:#000;}
-    .room{display:none;opacity:0;transition:opacity .4s;}
-    .room.active{display:block;opacity:1;}
-    .relay-container{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
-    .relay-card{background:var(--card);border-radius:20px;padding:28px;text-align:center;box-shadow:var(--shadow);border:1px solid rgba(0,212,255,.15);transition:var(--t);}
-    .relay-card:hover{transform:translateY(-10px);box-shadow:var(--glow),var(--shadow);}
-    @keyframes pulseOn{0%{box-shadow:var(--shadow),0 0 0 rgba(52,211,153,0);}60%{box-shadow:var(--shadow),0 0 40px rgba(52,211,153,.9);transform:scale(1.04);}100%{box-shadow:var(--shadow),0 0 18px rgba(52,211,153,.4);}}
-    @keyframes pulseOff{0%{box-shadow:var(--shadow),0 0 35px rgba(248,113,113,.7);}100%{box-shadow:var(--shadow);}}
-    .relay-card.turning-on{animation:pulseOn .45s ease-out;}
-    .relay-card.turning-off{animation:pulseOff .35s ease-out;}
-    .relay-card i{font-size:3rem;background:linear-gradient(45deg,var(--primary),var(--success));-webkit-background-clip:text;color:transparent;margin-bottom:12px;}
-    .status{font-size:1.3rem;font-weight:bold;padding:8px 20px;border-radius:50px;min-width:100px;transition:var(--t);}
-    .status.on{background:rgba(52,211,153,.2);color:var(--on);box-shadow:0 0 18px rgba(52,211,153,.4);}
-    .status.off{background:rgba(248,113,113,.2);color:var(--off);}
-    .relay-card button{width:100%;padding:16px;margin-top:16px;border:none;border-radius:14px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:var(--t);}
-    .relay-card button.on{background:linear-gradient(45deg,#10b981,#34d399);box-shadow:0 0 20px rgba(52,211,153,.6);}
-    .relay-card button.off{background:linear-gradient(45deg,#64748b,#94a3b8);}
-    .relay-card button:hover{transform:scale(1.05);}
-    .room-controls{text-align:center;margin:40px 0;}
-    .room-controls button{padding:16px 36px;border:none;border-radius:14px;font-size:1.2rem;font-weight:bold;cursor:pointer;min-width:260px;display:inline-flex;align-items:center;justify-content:center;gap:12px;transition:var(--t);}
-    .all-toggle{background:linear-gradient(45deg,#8b5cf6,#ec4899);box-shadow:0 0 25px rgba(139,92,246,.5);}
-    .all-toggle.all-on{background:linear-gradient(45deg,#ef4444,#f87171)!important;box-shadow:0 0 25px rgba(239,68,68,.6)!important;}
-    .room-controls button:hover{transform:translateY(-5px) scale(1.03);}
-    footer{text-align:center;padding:30px;color:#666;font-size:.9rem;}
-  </style>
+<meta charset="UTF-8">
+<title>Sterowanie Domem</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--prim:#00d4ff;--on:#39ff8c;--off:#ff4757;--t:all .35s ease;}
+  body.night-mode{--bg:#000;--card:#0d0d0f;--text:#666;--prim:#ff3366;--on:#08f8a0;--off:#ff3366;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:15px;transition:var(--t);}
+  .theme{position:fixed;top:15px;right:15px;z-index:99;width:50px;height:50px;background:#222;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .theme i{font-size:1.5rem;color:var(--prim);}
+  h1{text-align:center;margin:20px 0 30px;font-size:2.5rem;background:linear-gradient(90deg,var(--prim),var(--on));-webkit-background-clip:text;color:transparent;}
+  .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:30px;}
+  .tab{padding:12px 24px;background:var(--card);border-radius:12px;cursor:pointer;font-weight:600;transition:var(--t);}
+  .tab.active{background:linear-gradient(45deg,var(--prim),var(--on));color:#000;}
+  .room{display:none;}
+  .room.active{display:block;}
+  .grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
+  .card{background:var(--card);border-radius:16px;padding:24px;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.5);transition:var(--t);}
+  .card:hover{transform:translateY(-8px);}
+  .card i{font-size:3rem;margin-bottom:12px;background:linear-gradient(45deg,var(--prim),var(--on));-webkit-background-clip:text;color:transparent;}
+  .status{font-size:1.4rem;font-weight:bold;padding:10px 20px;border-radius:50px;margin:15px 0;}
+  .status.on{background:#39ff8c22;color:var(--on);box-shadow:0 0 20px #39ff8c44;}
+  .status.off{background:#ff475722;color:var(--off);}
+  button{width:100%;padding:16px;border:none;border-radius:12px;font-size:1.2rem;font-weight:bold;cursor:pointer;transition:var(--t);}
+  button.on{background:linear-gradient(45deg,#10b981,#34d399);box-shadow:0 0 25px #34d39966;}
+  button.off{background:#334155;}
+  button:hover{transform:scale(1.05);}
+  .allbtn{margin:40px auto;display:block;padding:18px 40px;background:linear-gradient(45deg,#8b5cf6,#ec4899);color:#000;font-size:1.3rem;min-width:280px;border-radius:14px;}
+  .allbtn.on{background:linear-gradient(45deg,#ef4444,#f87171);}
+  @keyframes p{0%{box-shadow:0 0 0 rgba(57,255,140,0);}50%{box-shadow:0 0 50px rgba(57,255,140,.9);transform:scale(1.05);}100%{box-shadow:0 0 20px rgba(57,255,140,.4);}}
+  .card.on{animation:p .6s;}
+</style>
 </head>
 <body>
 
-  <div class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></div>
-  <h1>Sterowanie oświetleniem domu</h1>
+<div class="theme" id="theme"><i class="fas fa-moon"></i></div>
+<h1>Sterowanie Domem</h1>
 
-  <div class="tabs">
-    <div class="tab active" data-room="biurko"><i class="fas fa-desktop"></i> Biurko</div>
-    <div class="tab" data-room="pracownia"><i class="fas fa-tools"></i> Pracownia</div>
-    <div class="tab" data-room="pokoj"><i class="fas fa-bed"></i> Pokój</div>
-    <div class="tab" data-room="salon"><i class="fas fa-couch"></i> Salon</div>
-  </div>
+<div class="tabs">
+  <div class="tab active" data-r="biurko">Biurko</div>
+  <div class="tab" data-r="pracownia">Pracownia</div>
+  <div class="tab" data-r="pokoj">Pokój</div>
+  <div class="tab" data-r="salon">Salon</div>
+</div>
 
-  <div id="biurko" class="room active"><div class="relay-container" id="biurko-container"></div><div class="room-controls"><button class="all-toggle" id="allBiurko"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
-  <div id="pracownia" class="room"><div class="relay-container" id="pracownia-container"></div><div class="room-controls"><button class="all-toggle" id="allPracownia"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
-  <div id="pokoj" class="room"><div class="relay-container" id="pokoj-container"></div><div class="room-controls"><button class="all-toggle" id="allPokoj"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
-  <div id="salon" class="room"><div class="relay-container" id="salon-container"></div><div class="room-controls"><button class="all-toggle" id="allSalon"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
+<div id="biurko" class="room active"><div class="grid" id="g0"></div><button class="allbtn" id="a0">WŁĄCZ WSZYSTKO</button></div>
+<div id="pracownia" class="room"><div class="grid" id="g1"></div><button class="allbtn" id="a1">WŁĄCZ WSZYSTKO</button></div>
+<div id="pokoj" class="room"><div class="grid" id="g2"></div><button class="allbtn" id="a2">WŁĄCZ WSZYSTKO</button></div>
+<div id="salon" class="room"><div class="grid" id="g3"></div><button class="allbtn" id="a3">WŁĄCZ WSZYSTKO</button></div>
 
-  <footer>Tech StudyCell © 2025</footer>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<script>
+// Tryb nocny
+document.getElementById('theme').onclick = () => {
+  document.body.classList.toggle('night-mode');
+  const icon = document.body.classList.contains('night-mode') ? 'sun' : 'moon';
+  document.querySelector('#theme i').className = `fas fa-${icon}`;
+  localStorage.setItem('nightMode', document.body.classList.contains('night-mode'));
+};
+if (localStorage.getItem('nightMode')==='true') document.body.classList.add('night-mode');
 
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-  <script>
-    // Tryb nocny
-    const t = document.getElementById('themeToggle');
-    if (localStorage.getItem('nightMode')==='true') { document.body.classList.add('night-mode'); t.innerHTML='<i class="fas fa-sun"></i>'; }
-    t.onclick = () => { document.body.classList.toggle('night-mode'); const n=document.body.classList.contains('night-mode'); t.innerHTML=n?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>'; localStorage.setItem('nightMode',n); };
+// Firebase
+firebase.initializeApp({
+  apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
+  authDomain: "domek-52b6a.firebaseapp.com",
+  databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "domek-52b6a"
+});
+const db = firebase.database();
 
-    firebase.initializeApp({
-      apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
-      authDomain: "domek-52b6a.firebaseapp.com",
-      databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "domek-52b6a",
-      storageBucket: "domek-52b6a.firebasestorage.app",
-      messagingSenderId: "641050671936",
-      appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
-    });
-    const db = firebase.database();
-
-    // INICJALIZACJA BRAKUJĄCYCH ZMIENNYCH (b4–b15) – z poprawną strukturą {state: false}
-    for (let i = 4; i <= 15; i++) {
-      db.ref('b' + i).once('value').then(s => { if (!s.exists()) db.ref('b' + i + '/state').set(false); });
+// MIGRACJA + INICJALIZACJA – raz na zawsze
+async function initDB() {
+  for (let i = 0; i <= 15; i++) {
+    const snap = await db.ref(`relay${i}`).once('value');
+    if (snap.val() === null) {
+      await db.ref(`relay${i}`).set(false);
     }
+    // migracja starych b0-b3 → relay0-relay3
+    const old = await db.ref(`b${i}`).once('value');
+    if (old.exists() && i <= 3) {
+      const state = old.child('state').val();
+      if (typeof state === 'boolean') await db.ref(`relay${i}`).set(state);
+    }
+  }
+}
+initDB();
 
-    const rooms = {
-      biurko:    { start: 0, lights: 3, sockets: 1 },
-      pracownia: { start: 4, lights: 3, sockets: 3 },
-      pokoj:     { start: 7, lights: 3, sockets: 3 },
-      salon:     { start:10, lights: 3, sockets: 3 }
-    };
+// Konfiguracja pomieszczeń
+const config = [
+  {name:"biurko",    start:0,  lights:3, sockets:1 },
+  {name:"pracownia",start:4,  lights:3, sockets:3 },
+  {name:"pokoj",    start:7,  lights:3, sockets:3 },
+  {name:"salon",    start:10, lights:3, sockets:3 }
+];
 
-    Object.entries(rooms).forEach(([id, cfg]) => {
-      const container = document.getElementById(id + '-container');
-      const allBtn = document.getElementById('all' + id.charAt(0).toUpperCase() + id.slice(1));
-      const states = [];
+config.forEach((room, roomIdx) => {
+  const container = document.getElementById('g'+roomIdx);
+  const allBtn = document.getElementById('a'+roomIdx);
+  const states = [];
 
-      for (let i = 0; i < cfg.lights + cfg.sockets; i++) {
-        const idx = cfg.start + i;
-        const isLight = i < cfg.lights;
-        const name = isLight
-          ? (i===0?"Lewe":i===1?"Środkowe":i===2?"Prawe":`Światło ${i+1}`)
-          : `Gniazdko ${i-cfg.lights+1}`;
+  for (let i = 0; i < room.lights + room.sockets; i++) {
+    const idx = room.start + i;
+    const isLight = i < room.lights;
+    const title = isLight 
+      ? (i===0?"Lewe":i===1?"Środkowe":i===2?"Prawe":"Światło "+(i+1))
+      : "Gniazdko "+(i-room.lights+1);
 
-        const card = document.createElement('div'); card.className='relay-card';
-        card.innerHTML = `<i class="fas fa-${isLight?'lightbulb':'plug'}"></i><h2>${name}</h2><div class="status" id="s${idx}">Ładowanie...</div><button id="b${idx}">Ładowanie...</button>`;
-        container.appendChild(card);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<i class="fas fa-${isLight?'lightbulb':'plug'}"></i><h2>${title}</h2><div class="status" id="s${idx}">–</div><button id="b${idx}">–</button>`;
+    container.appendChild(card);
 
-        const status = document.getElementById('s'+idx);
-        const btn = document.getElementById('b'+idx);
-        const ref = db.ref('b'+idx+'/state');   // ← KLUCZOWA POPRAWKA!
+    const status = document.getElementById('s'+idx);
+    const btn = document.getElementById('b'+idx);
+    const ref = db.ref('relay'+idx);
 
-        let prev = null;
-        ref.on('value', snap => {
-          const state = snap.val() === true;
-          states[i] = state;
-
-          if (prev !== null && state !== prev) {
-            card.classList.remove('turning-on','turning-off');
-            void card.offsetWidth;
-            card.classList.add(state?'turning-on':'turning-off');
-          }
-          prev = state;
-
-          status.textContent = state?"ON":"OFF";
-          status.className = "status " + (state?"on":"off");
-          btn.textContent = state?"WYŁĄCZ":"WŁĄCZ";
-          btn.className = state?"on":"off";
-
-          const allOn = states.filter(Boolean).length === states.length;
-          allBtn.innerHTML = `<i class="fas fa-${allOn?'power-off':'bolt'}"></i> ${allOn?'WYŁĄCZ WSZYSTKO':'WŁĄCZ WSZYSTKO'}`;
-          allBtn.classList.toggle('all-on', allOn);
-        });
-
-        btn.onclick = () => ref.set(!states[i]);
-      }
-
-      allBtn.onclick = () => {
-        const target = states.filter(Boolean).length === states.length ? false : true;
-        for (let i = 0; i < states.length; i++) {
-          db.ref('b'+(cfg.start+i)+'/state').set(target);
-        }
-      };
+    ref.on('value', s => {
+      const on = s.val() === true;
+      states[i] = on;
+      status.textContent = on?"ON":"OFF";
+      status.className = "status " + (on?"on":"off");
+      btn.textContent = on?"WYŁĄCZ":"WŁĄCZ";
+      btn.className = on?"on":"off";
+      if (on) card.classList.add('on');
+      // update all button
+      const allOn = states.every(x => x);
+      allBtn.textContent = allOn ? "WYŁĄCZ WSZYSTKO" : "WŁĄCZ WSZYSTKO";
+      allBtn.classList.toggle('on', allOn);
     });
 
-    // Zakładki
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.onclick = () => {
-        document.querySelectorAll('.tab,.room').forEach(e => e.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.room).classList.add('active');
-      };
-    });
-  </script>
+    btn.onclick = () => ref.set(!states[i]);
+  }
+
+  allBtn.onclick = () => {
+    const target = states.every(x => x) ? false : true;
+    for (let i = 0; i < states.length; i++) {
+      db.ref('relay'+(room.start+i)).set(target);
+    }
+  };
+});
+
+// Przełączanie zakładek
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab,.room').forEach(e => e.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.r).classList.add('active');
+  };
+});
+</script>
 </body>
 </html>
