@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sterowanie oświetleniem biurka</title>
+
+  <!-- Google Fonts + Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #0f172a;           /* ciemne tło */
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --border: #334155;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 30px 0 40px;
+      background: linear-gradient(to right, #60a5fa, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* LOGIN */
+    #loginForm {
+      max-width: 420px;
+      margin: 60px auto;
+      background: var(--card);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+    }
+    #loginForm input {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 12px 0;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    #loginForm input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
+    }
+    #loginForm button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    #loginForm button:hover { background: #2563eb; transform: translateY(-2px); }
+
+    /* DASHBOARD */
+    #dashboard { display: none; }
+
+    .relay-container {
+      max-width: 1100px;
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      padding: 0 10px;
+    }
+
+    .relay-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .relay-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .relay-card i {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+      opacity: 0.9;
+    }
+
+    .relay-card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .relay-card .status {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 12px 0;
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: inline-block;
+      min-width: 80px;
+    }
+    .status.on  { background: rgba(16,185,129,0.2); color: var(--green); }
+    .status.off { background: rgba(148,163,184,0.2); color: #cbd5e1; }
+
+    .relay-card button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .relay-card button.on  { background: var(--green); }
+    .relay-card button.off { background: #475569; }
+    .relay-card button:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    /* Global buttons */
+    .global-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin: 30px 0;
+    }
+    .global-buttons button {
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: white;
+      min-width: 200px;
+      transition: all 0.3s;
+    }
+    #allOffBtn { background: var(--red); }
+    #logoutBtn { background: #64748b; }
+    .global-buttons button:hover { transform: translateY(-3px); opacity: 0.9; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Animacja przy ładowaniu */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .relay-card { animation: fadeIn 0.6s ease-out forwards; }
+  </style>
+</head>
+<body>
+
+  <h1>Oświetlenie nad biurkiem</h1>
+
+  <!-- LOGIN -->
+  <div id="loginForm">
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Hasło" required />
+    <button id="loginBtn">Zaloguj się</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <div class="relay-container">
+      <!-- 1 -->
+      <div class="relay-card">
+        <i class="fas fa-lightbulb" style="color:#facc15"></i>
+        <h2>Światło lewe</h2>
+        <div class="status" id="status1">Loading...</div>
+        <button id="btn1" class="off">Włącz</button>
+      </div>
+
+      <!-- 2 -->
+      <div class="relay-card">
+        <i class="fas fa-lightbulb" style="color:#a78bfa"></i>
+        <h2>Światło środkowe</h2>
+        <div class="status" id="status2">Loading...</div>
+        <button id="btn2" class="off">Włącz</button>
+      </div>
+
+      <!-- 3 -->
+      <div class="relay-card">
+        <i class="fas fa-lightbulb" style="color:#38bdf8"></i>
+        <h2>Światło prawe</h2>
+        <div class="status" id="status3">Loading...</div>
+        <button id="btn3" class="off">Włącz</button>
+      </div>
+
+      <!-- 4 -->
+      <div class="relay-card">
+        <i class="fas fa-plug" style="color:#fb923c"></i>
+        <h2>Gniazdka</h2>
+        <div class="status" id="status4">Loading...</div>
+        <button id="btn4" class="off">Włącz</button>
+      </div>
+    </div>
+
+    <div class="global-buttons">
+      <button id="allOffBtn">Wyłącz wszystko</button>
+      <button id="logoutBtn">Wyloguj</button>
+    </div>
+  </div>
+
+  <footer>Podjebka od Tech StudyCell © 2025</footer>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
+      authDomain: "domek-52b6a.firebaseapp.com",
+      databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "domek-52b6a",
+      storageBucket: "domek-52b6a.firebasestorage.app",
+      messagingSenderId: "641050671936",
+      appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const allowedEmail = "joszrank@gmail.com";
+    const allowedPassword = "LotyWChmurach";
+
+    const loginForm = document.getElementById("loginForm");
+    const dashboard = document.getElementById("dashboard");
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) return alert("Wpisz email i hasło");
+
+      if (email === allowedEmail && password === allowedPassword) {
+        firebase.auth().signInWithEmailAndPassword(email, password)
+          .then(() => {
+            loginForm.style.display = "none";
+            dashboard.style.display = "block";
+            startRelayControl();
+          })
+          .catch(err => alert("Błąd logowania Firebase: " + err.message));
+      } else {
+        alert("Niepoprawne dane logowania");
+      }
+    });
+
+    function startRelayControl() {
+      const db = firebase.database();
+      const relays = [
+        { id: 1, path: "b0", icon: "fa-lightbulb" },
+        { id: 2, path: "b1", icon: "fa-lightbulb" },
+        { id: 3, path: "b2", icon: "fa-lightbulb" },
+        { id: 4, path: "b3", icon: "fa-plug" }
+      ];
+
+      relays.forEach(r => {
+        const statusEl = document.getElementById(`status${r.id}`);
+        const btn = document.getElementById(`btn${r.id}`);
+        const ref = db.ref("/" + r.path);
+
+        ref.on("value", snap => {
+          const state = snap.val();
+          statusEl.textContent = state ? "ON" : "OFF";
+          statusEl.className = "status " + (state ? "on" : "off");
+          btn.textContent = state ? "Wyłącz" : "Włącz";
+          btn.className = state ? "on" : "off";
+        });
+
+        btn.onclick = () => ref.get().then(s => ref.set(!s.val()));
+      });
+
+      document.getElementById("allOffBtn").onclick = () => {
+        relays.forEach(r => db.ref("/" + r.path).set(false));
+      };
+    }
+
+    document.getElementById("logoutBtn").onclick = () => {
+      firebase.auth().signOut().then(() => {
+        dashboard.style.display = "none";
+        loginForm.style.display = "block";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+      });
+    };
+  </script>
+</body>
+</html>
