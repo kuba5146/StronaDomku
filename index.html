@@ -6,36 +6,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root{--bg:#0f1116;--card:#1a1d24;--text:#e0e0e0;--primary:#00d4ff;--success:#00ff88;--on:#34d399;--off:#f87171;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow:0 0 20px rgba(0,212,255,0.4);--transition:all .35s cubic-bezier(.4,0,.2,1);}
+    :root{--bg:#0f1116;--card:#1a1d24;--text:#e0e0e0;--primary:#00d4ff;--success:#00ff88;--on:#34d399;--off:#f87171;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow:0 0 20px rgba(0,212,255,0.4);--t:all .35s cubic-bezier(.4,0,.2,1);}
     body.night-mode{--bg:#050507;--card:#0e0e12;--text:#555;--primary:#ff2e63;--success:#08f8a0;--on:#08f8a0;--off:#ff3366;--glow:0 0 15px rgba(255,46,99,0.3);}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,var(--bg),#1a1d2e);color:var(--text);min-height:100vh;padding:20px 10px;transition:var(--transition);}
-    .theme-toggle{position:fixed;top:20px;right:20px;z-index:9999;width:56px;height:56px;border-radius:50%;background:rgba(30,30,40,.9);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,.1);box-shadow:0 4px 15px rgba(0,0,0,.5);transition:var(--transition);}
+    body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,var(--bg),#1a1d2e);color:var(--text);min-height:100vh;padding:20px 10px;transition:var(--t);}
+    .theme-toggle{position:fixed;top:20px;right:20px;z-index:9999;width:56px;height:56px;border-radius:50%;background:rgba(30,30,40,.9);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,.1);box-shadow:0 4px 15px rgba(0,0,0,.5);transition:var(--t);}
     .theme-toggle:hover{transform:scale(1.15);}
     .theme-toggle i{font-size:1.5rem;color:var(--primary);}
     h1{text-align:center;font-size:2.6rem;margin:20px 0 10px;background:linear-gradient(90deg,var(--primary),var(--success));-webkit-background-clip:text;background-clip:text;color:transparent;}
     .tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:20px 0 40px;}
-    .tab{padding:14px 28px;background:var(--card);border-radius:14px;cursor:pointer;font-weight:bold;transition:var(--transition);display:flex;align-items:center;gap:10px;}
+    .tab{padding:14px 28px;background:var(--card);border-radius:14px;cursor:pointer;font-weight:bold;transition:var(--t);display:flex;align-items:center;gap:10px;}
     .tab.active{background:linear-gradient(45deg,var(--primary),var(--success));color:#000;}
     .room{display:none;opacity:0;transition:opacity .4s;}
     .room.active{display:block;opacity:1;}
     .relay-container{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
-    .relay-card{background:var(--card);border-radius:20px;padding:28px;text-align:center;box-shadow:var(--shadow);border:1px solid rgba(0,212,255,.15);transition:var(--transition);}
+    .relay-card{background:var(--card);border-radius:20px;padding:28px;text-align:center;box-shadow:var(--shadow);border:1px solid rgba(0,212,255,.15);transition:var(--t);}
     .relay-card:hover{transform:translateY(-10px);box-shadow:var(--glow),var(--shadow);}
     @keyframes pulseOn{0%{box-shadow:var(--shadow),0 0 0 rgba(52,211,153,0);}60%{box-shadow:var(--shadow),0 0 40px rgba(52,211,153,.9);transform:scale(1.04);}100%{box-shadow:var(--shadow),0 0 18px rgba(52,211,153,.4);}}
     @keyframes pulseOff{0%{box-shadow:var(--shadow),0 0 35px rgba(248,113,113,.7);}100%{box-shadow:var(--shadow);}}
     .relay-card.turning-on{animation:pulseOn .45s ease-out;}
     .relay-card.turning-off{animation:pulseOff .35s ease-out;}
     .relay-card i{font-size:3rem;background:linear-gradient(45deg,var(--primary),var(--success));-webkit-background-clip:text;color:transparent;margin-bottom:12px;}
-    .status{font-size:1.3rem;font-weight:bold;padding:8px 20px;border-radius:50px;min-width:100px;transition:var(--transition);}
+    .status{font-size:1.3rem;font-weight:bold;padding:8px 20px;border-radius:50px;min-width:100px;transition:var(--t);}
     .status.on{background:rgba(52,211,153,.2);color:var(--on);box-shadow:0 0 18px rgba(52,211,153,.4);}
     .status.off{background:rgba(248,113,113,.2);color:var(--off);}
-    .relay-card button{width:100%;padding:16px;margin-top:16px;border:none;border-radius:14px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:var(--transition);}
+    .relay-card button{width:100%;padding:16px;margin-top:16px;border:none;border-radius:14px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:var(--t);}
     .relay-card button.on{background:linear-gradient(45deg,#10b981,#34d399);box-shadow:0 0 20px rgba(52,211,153,.6);}
     .relay-card button.off{background:linear-gradient(45deg,#64748b,#94a3b8);}
     .relay-card button:hover{transform:scale(1.05);}
     .room-controls{text-align:center;margin:40px 0;}
-    .room-controls button{padding:16px 36px;border:none;border-radius:14px;font-size:1.2rem;font-weight:bold;cursor:pointer;min-width:260px;display:inline-flex;align-items:center;justify-content:center;gap:12px;transition:var(--transition);}
+    .room-controls button{padding:16px 36px;border:none;border-radius:14px;font-size:1.2rem;font-weight:bold;cursor:pointer;min-width:260px;display:inline-flex;align-items:center;justify-content:center;gap:12px;transition:var(--t);}
     .all-toggle{background:linear-gradient(45deg,#8b5cf6,#ec4899);box-shadow:0 0 25px rgba(139,92,246,.5);}
     .all-toggle.all-on{background:linear-gradient(45deg,#ef4444,#f87171)!important;box-shadow:0 0 25px rgba(239,68,68,.6)!important;}
     .room-controls button:hover{transform:translateY(-5px) scale(1.03);}
@@ -48,16 +48,16 @@
   <h1>Sterowanie oświetleniem domu</h1>
 
   <div class="tabs">
-    <div class="tab active" data-room="biurko">Biurko</div>
-    <div class="tab" data-room="pracownia">Pracownia</div>
-    <div class="tab" data-room="pokoj">Pokój</div>
-    <div class="tab" data-room="salon">Salon</div>
+    <div class="tab active" data-room="biurko"><i class="fas fa-desktop"></i> Biurko</div>
+    <div class="tab" data-room="pracownia"><i class="fas fa-tools"></i> Pracownia</div>
+    <div class="tab" data-room="pokoj"><i class="fas fa-bed"></i> Pokój</div>
+    <div class="tab" data-room="salon"><i class="fas fa-couch"></i> Salon</div>
   </div>
 
-  <div id="biurko" class="room active"><div class="relay-container" id="biurko-container"></div><div class="room-controls"><button class="all-toggle" id="allBiurko">Sprawdzanie...</button></div></div>
-  <div id="pracownia" class="room"><div class="relay-container" id="pracownia-container"></div><div class="room-controls"><button class="all-toggle" id="allPracownia">Sprawdzanie...</button></div></div>
-  <div id="pokoj" class="room"><div class="relay-container" id="pokoj-container"></div><div class="room-controls"><button class="all-toggle" id="allPokoj">Sprawdzanie...</button></div></div>
-  <div id="salon" class="room"><div class="relay-container" id="salon-container"></div><div class="room-controls"><button class="all-toggle" id="allSalon">Sprawdzanie...</button></div></div>
+  <div id="biurko" class="room active"><div class="relay-container" id="biurko-container"></div><div class="room-controls"><button class="all-toggle" id="allBiurko"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
+  <div id="pracownia" class="room"><div class="relay-container" id="pracownia-container"></div><div class="room-controls"><button class="all-toggle" id="allPracownia"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
+  <div id="pokoj" class="room"><div class="relay-container" id="pokoj-container"></div><div class="room-controls"><button class="all-toggle" id="allPokoj"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
+  <div id="salon" class="room"><div class="relay-container" id="salon-container"></div><div class="room-controls"><button class="all-toggle" id="allSalon"><i class="fas fa-bolt"></i> Sprawdzanie...</button></div></div>
 
   <footer>Tech StudyCell © 2025</footer>
 
@@ -65,16 +65,10 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script>
     // Tryb nocny
-    const toggle = document.getElementById('themeToggle');
-    if (localStorage.getItem('nightMode')==='true') { document.body.classList.add('night-mode'); toggle.innerHTML='<i class="fas fa-sun"></i>'; }
-    toggle.onclick = () => {
-      document.body.classList.toggle('night-mode');
-      const n = document.body.classList.contains('night-mode');
-      toggle.innerHTML = n ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-      localStorage.setItem('nightMode', n);
-    };
+    const t = document.getElementById('themeToggle');
+    if (localStorage.getItem('nightMode')==='true') { document.body.classList.add('night-mode'); t.innerHTML='<i class="fas fa-sun"></i>'; }
+    t.onclick = () => { document.body.classList.toggle('night-mode'); const n=document.body.classList.contains('night-mode'); t.innerHTML=n?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>'; localStorage.setItem('nightMode',n); };
 
-    // Firebase
     firebase.initializeApp({
       apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
       authDomain: "domek-52b6a.firebaseapp.com",
@@ -86,81 +80,67 @@
     });
     const db = firebase.database();
 
-    // AUTOMATYCZNE TWORZENIE BRAKUJĄCYCH ZMIENNYCH Z WŁAŚCIWĄ STRUKTURĄ
-    for (let i = 0; i <= 15; i++) {
-      db.ref('/b' + i).once('value').then(snap => {
-        if (snap.val() === null) {
-          db.ref('/b' + i + '/state').set(false);
-        }
-      });
+    // INICJALIZACJA BRAKUJĄCYCH ZMIENNYCH (b4–b15) – z poprawną strukturą {state: false}
+    for (let i = 4; i <= 15; i++) {
+      db.ref('b' + i).once('value').then(s => { if (!s.exists()) db.ref('b' + i + '/state').set(false); });
     }
 
     const rooms = {
       biurko:    { start: 0, lights: 3, sockets: 1 },
       pracownia: { start: 4, lights: 3, sockets: 3 },
       pokoj:     { start: 7, lights: 3, sockets: 3 },
-      salon:     { start: 10, lights: 3, sockets: 3 }
+      salon:     { start:10, lights: 3, sockets: 3 }
     };
 
-    Object.entries(rooms).forEach(([roomId, cfg]) => {
-      const container = document.getElementById(roomId + '-container');
-      const allBtn = document.getElementById('all' + roomId.charAt(0).toUpperCase() + roomId.slice(1));
+    Object.entries(rooms).forEach(([id, cfg]) => {
+      const container = document.getElementById(id + '-container');
+      const allBtn = document.getElementById('all' + id.charAt(0).toUpperCase() + id.slice(1));
       const states = [];
 
       for (let i = 0; i < cfg.lights + cfg.sockets; i++) {
         const idx = cfg.start + i;
         const isLight = i < cfg.lights;
         const name = isLight
-          ? (i === 0 ? "Lewe" : i === 1 ? "Środkowe" : i === 2 ? "Prawe" : `Światło ${i+1}`)
-          : `Gniazdko ${i - cfg.lights + 1}`;
+          ? (i===0?"Lewe":i===1?"Środkowe":i===2?"Prawe":`Światło ${i+1}`)
+          : `Gniazdko ${i-cfg.lights+1}`;
 
-        const card = document.createElement('div');
-        card.className = 'relay-card';
-        card.innerHTML = `
-          <i class="fas fa-${isLight ? 'lightbulb' : 'plug'}"></i>
-          <h2>${name}</h2>
-          <div class="status" id="status${idx}">Ładowanie...</div>
-          <button id="btn${idx}">Ładowanie...</button>
-        `;
+        const card = document.createElement('div'); card.className='relay-card';
+        card.innerHTML = `<i class="fas fa-${isLight?'lightbulb':'plug'}"></i><h2>${name}</h2><div class="status" id="s${idx}">Ładowanie...</div><button id="b${idx}">Ładowanie...</button>`;
         container.appendChild(card);
 
-        const statusEl = document.getElementById(`status${idx}`);
-        const btn = document.getElementById(`btn${idx}`);
-        const ref = db.ref('/b' + idx + '/state');   // ← TO JEST KLUCZOWE!
+        const status = document.getElementById('s'+idx);
+        const btn = document.getElementById('b'+idx);
+        const ref = db.ref('b'+idx+'/state');   // ← KLUCZOWA POPRAWKA!
 
-        let prevState = null;
-
+        let prev = null;
         ref.on('value', snap => {
           const state = snap.val() === true;
           states[i] = state;
 
-          if (prevState !== null && state !== prevState) {
-            card.classList.remove('turning-on', 'turning-off');
+          if (prev !== null && state !== prev) {
+            card.classList.remove('turning-on','turning-off');
             void card.offsetWidth;
-            card.classList.add(state ? 'turning-on' : 'turning-off');
+            card.classList.add(state?'turning-on':'turning-off');
           }
-          prevState = state;
+          prev = state;
 
-          statusEl.textContent = state ? "ON" : "OFF";
-          statusEl.className = "status " + (state ? "on" : "off");
-          btn.textContent = state ? "WYŁĄCZ" : "WŁĄCZ";
-          btn.className = state ? "on" : "off";
+          status.textContent = state?"ON":"OFF";
+          status.className = "status " + (state?"on":"off");
+          btn.textContent = state?"WYŁĄCZ":"WŁĄCZ";
+          btn.className = state?"on":"off";
 
-          const allOn = states.filter(s => s !== undefined).every(s => s === true);
-          allBtn.innerHTML = `<i class="fas fa-${allOn ? 'power-off' : 'bolt'}"></i> ${allOn ? 'WYŁĄCZ WSZYSTKO' : 'WŁĄCZ WSZYSTKO'}`;
+          const allOn = states.filter(Boolean).length === states.length;
+          allBtn.innerHTML = `<i class="fas fa-${allOn?'power-off':'bolt'}"></i> ${allOn?'WYŁĄCZ WSZYSTKO':'WŁĄCZ WSZYSTKO'}`;
           allBtn.classList.toggle('all-on', allOn);
         });
 
-        btn.onclick = () => {
-          const newState = !states[i];
-          ref.set(newState);
-        };
+        btn.onclick = () => ref.set(!states[i]);
       }
 
       allBtn.onclick = () => {
-        const target = states.filter(s => s !== undefined).every(s => s === true) ? false : true;
+        const target = states.filter(Boolean).length === states.length ? false : true;
         for (let i = 0; i < states.length; i++) {
-          db.ref('/b' + (cfg.start + i) + '/state').set(target);
+          db.ref('b'+(cfg.start+i)+'/state').set(target);
         }
       };
     });
@@ -168,7 +148,7 @@
     // Zakładki
     document.querySelectorAll('.tab').forEach(tab => {
       tab.onclick = () => {
-        document.querySelectorAll('.tab,.room').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab,.room').forEach(e => e.classList.remove('active'));
         tab.classList.add('active');
         document.getElementById(tab.dataset.room).classList.add('active');
       };
