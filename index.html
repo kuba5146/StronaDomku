@@ -1,157 +1,259 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<title>Sterowanie Domem</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-  :root{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--prim:#00d4ff;--on:#39ff8c;--off:#ff4757;--t:all .35s ease;}
-  body.night-mode{--bg:#000;--card:#0d0d0f;--text:#666;--prim:#ff3366;--on:#08f8a0;--off:#ff3366;}
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:15px;transition:var(--t);}
-  .theme{position:fixed;top:15px;right:15px;z-index:99;width:50px;height:50px;background:#222;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .theme i{font-size:1.5rem;color:var(--prim);}
-  h1{text-align:center;margin:20px 0 30px;font-size:2.5rem;background:linear-gradient(90deg,var(--prim),var(--on));-webkit-background-clip:text;color:transparent;}
-  .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:30px;}
-  .tab{padding:12px 24px;background:var(--card);border-radius:12px;cursor:pointer;font-weight:600;transition:var(--t);}
-  .tab.active{background:linear-gradient(45deg,var(--prim),var(--on));color:#000;}
-  .room{display:none;}
-  .room.active{display:block;}
-  .grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
-  .card{background:var(--card);border-radius:16px;padding:24px;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.5);transition:var(--t);}
-  .card:hover{transform:translateY(-8px);}
-  .card i{font-size:3rem;margin-bottom:12px;background:linear-gradient(45deg,var(--prim),var(--on));-webkit-background-clip:text;color:transparent;}
-  .status{font-size:1.4rem;font-weight:bold;padding:10px 20px;border-radius:50px;margin:15px 0;}
-  .status.on{background:#39ff8c22;color:var(--on);box-shadow:0 0 20px #39ff8c44;}
-  .status.off{background:#ff475722;color:var(--off);}
-  button{width:100%;padding:16px;border:none;border-radius:12px;font-size:1.2rem;font-weight:bold;cursor:pointer;transition:var(--t);}
-  button.on{background:linear-gradient(45deg,#10b981,#34d399);box-shadow:0 0 25px #34d39966;}
-  button.off{background:#334155;}
-  button:hover{transform:scale(1.05);}
-  .allbtn{margin:40px auto;display:block;padding:18px 40px;background:linear-gradient(45deg,#8b5cf6,#ec4899);color:#000;font-size:1.3rem;min-width:280px;border-radius:14px;}
-  .allbtn.on{background:linear-gradient(45deg,#ef4444,#f87171);}
-  @keyframes p{0%{box-shadow:0 0 0 rgba(57,255,140,0);}50%{box-shadow:0 0 50px rgba(57,255,140,.9);transform:scale(1.05);}100%{box-shadow:0 0 20px rgba(57,255,140,.4);}}
-  .card.on{animation:p .6s;}
-</style>
+  <meta charset="UTF-8" />
+  <title>Sterowanie oświetleniem domu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1116;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.8rem;
+      margin: 30px 0;
+      background: linear-gradient(90deg, #00d4ff, #00ff88);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    /* Zakładki */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 14px 30px;
+      background: #1a1d24;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.4s;
+    }
+    .tab.active {
+      background: linear-gradient(45deg, #00d4ff, #00ff88);
+      color: black;
+    }
+
+    /* Karty */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    .relay-card {
+      background: #1a1d24;
+      border-radius: 24px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .relay-card:hover { transform: translateY(-10px); }
+
+    @keyframes pulseOn {
+      0%   { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 rgba(52,211,153,0); }
+      60%  { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 50px rgba(52,211,153,0.9); transform: scale(1.05); }
+      100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(52,211,153,0.4); }
+    }
+    @keyframes pulseOff {
+      0%   { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(248,113,113,0.7); }
+      100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    }
+    .relay-card.turning-on  { animation: pulseOn 0.6s ease-out; }
+    .relay-card.turning-off { animation: pulseOff 0.4s ease-out; }
+
+    .relay-card i {
+      font-size: 3.5rem;
+      margin-bottom: 15px;
+      background: linear-gradient(45deg, #00d4ff, #00ff88);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .status {
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding: 10px 25px;
+      border-radius: 50px;
+      margin: 15px 0;
+    }
+    .status.on  { background: rgba(52,211,153,0.2); color: #34d399; box-shadow: 0 0 20px rgba(52,211,153,0.4); }
+    .status.off { background: rgba(248,113,113,0.2); color: #f87171; }
+
+    .relay-card button {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.4s;
+    }
+    .relay-card button.on  { background: linear-gradient(45deg, #10b981, #34d399); box-shadow: 0 0 30px rgba(52,211,153,0.6); }
+    .relay-card button.off { background: #475569; }
+
+    /* Przycisk Wszystko */
+    .all-control {
+      text-align: center;
+      margin: 50px 0;
+    }
+    .all-control button {
+      padding: 18px 50px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      background: linear-gradient(45deg, #8b5cf6, #ec4899);
+      color: white;
+      min-width: 300px;
+    }
+    .all-control button.all-on {
+      background: linear-gradient(45deg, #ef4444, #f87171);
+    }
+
+    .room { display: none; }
+    .room.active { display: block; }
+  </style>
 </head>
 <body>
 
-<div class="theme" id="theme"><i class="fas fa-moon"></i></div>
-<h1>Sterowanie Domem</h1>
+  <h1>Sterowanie oświetleniem domu</h1>
 
-<div class="tabs">
-  <div class="tab active" data-r="biurko">Biurko</div>
-  <div class="tab" data-r="pracownia">Pracownia</div>
-  <div class="tab" data-r="pokoj">Pokój</div>
-  <div class="tab" data-r="salon">Salon</div>
-</div>
+  <div class="tabs">
+    <div class="tab active" data-room="biurko">Biurko</div>
+    <div class="tab" data-room="pracownia">Pracownia</div>
+    <div class="tab" data-room="pokoj">Pokój</div>
+    <div class="tab" data-room="salon">Salon</div>
+  </div>
 
-<div id="biurko" class="room active"><div class="grid" id="g0"></div><button class="allbtn" id="a0">WŁĄCZ WSZYSTKO</button></div>
-<div id="pracownia" class="room"><div class="grid" id="g1"></div><button class="allbtn" id="a1">WŁĄCZ WSZYSTKO</button></div>
-<div id="pokoj" class="room"><div class="grid" id="g2"></div><button class="allbtn" id="a2">WŁĄCZ WSZYSTKO</button></div>
-<div id="salon" class="room"><div class="grid" id="g3"></div><button class="allbtn" id="a3">WŁĄCZ WSZYSTKO</button></div>
+  <!-- BIURKO -->
+  <div id="biurko" class="room active">
+    <div class="container">
+      <div class="relay-card" data-id="0"><i class="fas fa-lightbulb"></i><h2>Światło lewe</h2><div class="status" id="s0">Ładowanie...</div><button id="b0">Ładowanie...</button></div>
+      <div class="relay-card" data-id="1"><i class="fas fa-lightbulb"></i><h2>Światło środkowe</h2><div class="status" id="s1">Ładowanie...</div><button id="b1">Ładowanie...</button></div>
+      <div class="relay-card" data-id="2"><i class="fas fa-lightbulb"></i><h2>Światło prawe</h2><div class="status" id="s2">Ładowanie...</div><button id="b2">Ładowanie...</button></div>
+      <div class="relay-card" data-id="3"><i class="fas fa-plug"></i><h2>Gniazdko</h2><div class="status" id="s3">Ładowanie...</div><button id="b3">Ładowanie...</button></div>
+    </div>
+    <div class="all-control"><button id="allBiurko">WŁĄCZ WSZYSTKO</button></div>
+  </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-<script>
-// Tryb nocny
-document.getElementById('theme').onclick = () => {
-  document.body.classList.toggle('night-mode');
-  const icon = document.body.classList.contains('night-mode') ? 'sun' : 'moon';
-  document.querySelector('#theme i').className = `fas fa-${icon}`;
-  localStorage.setItem('nightMode', document.body.classList.contains('night-mode'));
-};
-if (localStorage.getItem('nightMode')==='true') document.body.classList.add('night-mode');
+  <!-- PRACOWNIA -->
+  <div id="pracownia" class="room">
+    <div class="container">
+      <div class="relay-card" data-id="4"><i class="fas fa-lightbulb"></i><h2>Światło 1</h2><div class="status" id="s4">Ładowanie...</div><button id="b4">Ładowanie...</button></div>
+      <div class="relay-card" data-id="5"><i class="fas fa-lightbulb"></i><h2>Światło 2</h2><div class="status" id="s5">Ładowanie...</div><button id="b5">Ładowanie...</button></div>
+      <div class="relay-card" data-id="6"><i class="fas fa-lightbulb"></i><h2>Światło 3</h2><div class="status" id="s6">Ładowanie...</div><button id="b6">Ładowanie...</button></div>
+      <div class="relay-card" data-id="7"><i class="fas fa-plug"></i><h2>Gniazdko 1</h2><div class="status" id="s7">Ładowanie...</div><button id="b7">Ładowanie...</button></div>
+      <div class="relay-card" data-id="8"><i class="fas fa-plug"></i><h2>Gniazdko 2</h2><div class="status" id="s8">Ładowanie...</div><button id="b8">Ładowanie...</button></div>
+      <div class="relay-card" data-id="9"><i class="fas fa-plug"></i><h2>Gniazdko 3</h2><div class="status" id="s9">Ładowanie...</div><button id="b9">Ładowanie...</button></div>
+    </div>
+    <div class="all-control"><button id="allPracownia">WŁĄCZ WSZYSTKO</button></div>
+  </div>
 
-// Firebase
-firebase.initializeApp({
-  apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
-  authDomain: "domek-52b6a.firebaseapp.com",
-  databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "domek-52b6a"
-});
-const db = firebase.database();
+  <!-- POKÓJ -->
+  <div id="pokoj" class="room">
+    <div class="container">
+      <div class="relay-card" data-id="10"><i class="fas fa-lightbulb"></i><h2>Światło 1</h2><div class="status" id="s10">Ładowanie...</div><button id="b10">Ładowanie...</button></div>
+      <div class="relay-card" data-id="11"><i class="fas fa-lightbulb"></i><h2>Światło 2</h2><div class="status" id="s11">Ładowanie...</div><button id="b11">Ładowanie...</button></div>
+      <div class="relay-card" data-id="12"><i class="fas fa-lightbulb"></i><h2>Światło 3</h2><div class="status" id="s12">Ładowanie...</div><button id="b12">Ładowanie...</button></div>
+      <div class="relay-card" data-id="13"><i class="fas fa-plug"></i><h2>Gniazdko 1</h2><div class="status" id="s13">Ładowanie...</div><button id="b13">Ładowanie...</button></div>
+      <div class="relay-card" data-id="14"><i class="fas fa-plug"></i><h2>Gniazdko 2</h2><div class="status" id="s14">Ładowanie...</div><button id="b14">Ładowanie...</button></div>
+      <div class="relay-card" data-id="15"><i class="fas fa-plug"></i><h2>Gniazdko 3</h2><div class="status" id="s15">Ładowanie...</div><button id="b15">Ładowanie...</button></div>
+    </div>
+    <div class="all-control"><button id="allPokoj">WŁĄCZ WSZYSTKO</button></div>
+  </div>
 
-// MIGRACJA + INICJALIZACJA – raz na zawsze
-async function initDB() {
-  for (let i = 0; i <= 15; i++) {
-    const snap = await db.ref(`relay${i}`).once('value');
-    if (snap.val() === null) {
-      await db.ref(`relay${i}`).set(false);
-    }
-    // migracja starych b0-b3 → relay0-relay3
-    const old = await db.ref(`b${i}`).once('value');
-    if (old.exists() && i <= 3) {
-      const state = old.child('state').val();
-      if (typeof state === 'boolean') await db.ref(`relay${i}`).set(state);
-    }
-  }
-}
-initDB();
+  <!-- SALON -->
+  <div id="salon" class="room">
+    <div class="container">
+      <div class="relay-card" data-id="16"><i class="fas fa-lightbulb"></i><h2>Światło 1</h2><div class="status" id="s16">Ładowanie...</div><button id="b16">Ładowanie...</button></div>
+      <div class="relay-card" data-id="17"><i class="fas fa-lightbulb"></i><h2>Światło 2</h2><div class="status" id="s17">Ładowanie...</div><button id="b17">Ładowanie...</button></div>
+      <div class="relay-card" data-id="18"><i class="fas fa-lightbulb"></i><h2>Światło 3</h2><div class="status" id="s18">Ładowanie...</div><button id="b18">Ładowanie...</button></div>
+      <div class="relay-card" data-id="19"><i class="fas fa-plug"></i><h2>Gniazdko 1</h2><div class="status" id="s19">Ładowanie...</div><button id="b19">Ładowanie...</button></div>
+      <div class="relay-card" data-id="20"><i class="fas fa-plug"></i><h2>Gniazdko 2</h2><div class="status" id="s20">Ładowanie...</div><button id="b20">Ładowanie...</button></div>
+      <div class="relay-card" data-id="21"><i class="fas fa-plug"></i><h2>Gniazdko 3</h2><div class="status" id="s21">Ładowanie...</div><button id="b21">Ładowanie...</button></div>
+    </div>
+    <div class="all-control"><button id="allSalon">WŁĄCZ WSZYSTKO</button></div>
+  </div>
 
-// Konfiguracja pomieszczeń
-const config = [
-  {name:"biurko",    start:0,  lights:3, sockets:1 },
-  {name:"pracownia",start:4,  lights:3, sockets:3 },
-  {name:"pokoj",    start:7,  lights:3, sockets:3 },
-  {name:"salon",    start:10, lights:3, sockets:3 }
-];
-
-config.forEach((room, roomIdx) => {
-  const container = document.getElementById('g'+roomIdx);
-  const allBtn = document.getElementById('a'+roomIdx);
-  const states = [];
-
-  for (let i = 0; i < room.lights + room.sockets; i++) {
-    const idx = room.start + i;
-    const isLight = i < room.lights;
-    const title = isLight 
-      ? (i===0?"Lewe":i===1?"Środkowe":i===2?"Prawe":"Światło "+(i+1))
-      : "Gniazdko "+(i-room.lights+1);
-
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `<i class="fas fa-${isLight?'lightbulb':'plug'}"></i><h2>${title}</h2><div class="status" id="s${idx}">–</div><button id="b${idx}">–</button>`;
-    container.appendChild(card);
-
-    const status = document.getElementById('s'+idx);
-    const btn = document.getElementById('b'+idx);
-    const ref = db.ref('relay'+idx);
-
-    ref.on('value', s => {
-      const on = s.val() === true;
-      states[i] = on;
-      status.textContent = on?"ON":"OFF";
-      status.className = "status " + (on?"on":"off");
-      btn.textContent = on?"WYŁĄCZ":"WŁĄCZ";
-      btn.className = on?"on":"off";
-      if (on) card.classList.add('on');
-      // update all button
-      const allOn = states.every(x => x);
-      allBtn.textContent = allOn ? "WYŁĄCZ WSZYSTKO" : "WŁĄCZ WSZYSTKO";
-      allBtn.classList.toggle('on', allOn);
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
+      authDomain: "domek-52b6a.firebaseapp.com",
+      databaseURL: "https://domek-52b6a-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "domek-52b6a"
     });
+    const db = firebase.database();
 
-    btn.onclick = () => ref.set(!states[i]);
-  }
-
-  allBtn.onclick = () => {
-    const target = states.every(x => x) ? false : true;
-    for (let i = 0; i < states.length; i++) {
-      db.ref('relay'+(room.start+i)).set(target);
+    // Inicjalizacja wszystkich b0–b21 (jeśli nie istnieją – stworzy z state: false)
+    for(let i=0; i<=21; i++){
+      db.ref('b'+i).once('value').then(s => {
+        if(!s.exists()) db.ref('b'+i+'/state').set(false);
+      });
     }
-  };
-});
 
-// Przełączanie zakładek
-document.querySelectorAll('.tab').forEach(t => {
-  t.onclick = () => {
-    document.querySelectorAll('.tab,.room').forEach(e => e.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById(t.dataset.r).classList.add('active');
-  };
-});
-</script>
+    // Funkcja łącząca kartę z Firebase
+    function connectRelay(id) {
+      const card = document.querySelector(`[data-id="${id}"]`);
+      const status = document.getElementById('s'+id);
+      const btn = document.getElementById('b'+id);
+      const ref = db.ref('b'+id+'/state');
+      let lastState = null;
+
+      ref.on('value', snap => {
+        const state = snap.val() === true;
+        if (lastState !== null && state !== lastState) {
+          card.classList.remove('turning-on','turning-off');
+          void card.offsetWidth;
+          card.classList.add(state ? 'turning-on' : 'turning-off');
+        }
+        lastState = state;
+
+        status.textContent = state ? "ON" : "OFF";
+        status.className = "status " + (state ? "on" : "off");
+        btn.textContent = state ? "WYŁĄCZ" : "WŁĄCZ";
+        btn.className = state ? "on" : "off";
+      });
+
+      btn.onclick = () => ref.set(!lastState);
+    }
+
+    // Podłącz wszystkie 22 przekaźniki
+    for(let i=0; i<=21; i++) connectRelay(i);
+
+    // Przyciski "Wszystko" dla każdego pomieszczenia
+    document.getElementById('allBiurko').onclick = () => { for(let i=0;i<4;i++) db.ref('b'+i+'/state').set(true); };
+    document.getElementById('allPracownia').onclick = () => { for(let i=4;i<10;i++) db.ref('b'+i+'/state').set(true); };
+    document.getElementById('allPokoj').onclick = () => { for(let i=10;i<16;i++) db.ref('b'+i+'/state').set(true); };
+    document.getElementById('allSalon').onclick = () => { for(let i=16;i<22;i++) db.ref('b'+i+'/state').set(true); };
+
+    // Przełączanie zakładek
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.room).classList.add('active');
+      };
+    });
+  </script>
 </body>
 </html>
