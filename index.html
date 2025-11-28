@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sterowanie domem • Tech StudyCell</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/256/25/25694.png" type="image/png">
   <style>
     :root {
       /* Ciemny motyw premium (domyślny) */
@@ -22,21 +21,19 @@
       --red: #ef4444;
       --border: rgba(80,100,150,0.25);
     }
-
     /* JAŚNIEJSZY ZIELONY MOTYW – przyjemny dla oka */
     body.light-mode {
-      --bg: #c8d7c1;            /* jasny zielonkawy */
-      --card: #ffffff;           /* czysta biel kart */
-      --card-on: #f8fffb;        /* delikatnie zielonkawa biel przy włączonym */
-      --glow: #2d8c47;           /* głęboka, elegancka zieleń */
+      --bg: #c8d7c1; /* jasny zielonkawy */
+      --card: #ffffff; /* czysta biel kart */
+      --card-on: #f8fffb; /* delikatnie zielonkawa biel przy włączonym */
+      --glow: #2d8c47; /* głęboka, elegancka zieleń */
       --glow-soft: rgba(45,140,71,0.22);
       --text: #1a1a1a;
       --text-secondary: #444444;
-      --primary: #2d8c47;        /* zielony pasujący do glow */
+      --primary: #2d8c47; /* zielony pasujący do glow */
       --red: #c62828;
       --border: #a8b8a2;
     }
-
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       font-family: 'Inter', sans-serif;
@@ -46,7 +43,6 @@
       padding: 20px 10px;
       transition: background 0.6s ease, color 0.6s ease;
     }
-
     /* PRZEŁĄCZNIK MOTYWU */
     .theme-toggle {
       position: fixed;
@@ -68,7 +64,6 @@
     body.light-mode .theme-toggle { background: rgba(0,0,0,0.08); }
     .theme-toggle:hover { transform: scale(1.15); }
     .theme-toggle i { font-size: 1.8rem; color: var(--text); }
-
     /* TYTUŁ */
     .title-container {
       text-align: center;
@@ -93,7 +88,6 @@
     @keyframes titleFlow { 0% { background-position: 0%; } 100% { background-position: 200%; } }
     .lights-on h1 { animation: titleFlow 12s linear infinite, titleGlow 3s ease-in-out infinite; }
     @keyframes titleGlow { 0%,100% { filter: drop-shadow(0 0 16px var(--glow-soft)); } 50% { filter: drop-shadow(0 0 32px var(--glow-soft)); } }
-
     /* ZAKŁADKI Z IKONKAMI */
     .tabs {
       display: flex;
@@ -139,18 +133,15 @@
       background: rgba(45,140,71,0.25);
       border-color: var(--primary);
     }
-
     /* POKOJE */
     .room { display: none; animation: fadeIn 0.6s ease; }
     .room.active { display: block; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-
     .relay-container {
       max-width: 1200px; margin: 0 auto 60px;
       display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 32px; padding: 0 10px;
     }
-
     .relay-card {
       background: var(--card);
       border-radius: 32px;
@@ -177,14 +168,11 @@
       box-shadow: 0 0 50px var(--glow-soft), 0 25px 60px rgba(0,0,0,0.2);
     }
     .relay-card:hover { transform: translateY(-18px) scale(1.04); }
-
     .relay-card i { font-size: 6.5rem; margin-bottom: 20px; transition: all 0.4s; }
     .relay-card.off i { color: var(--text-secondary); }
     .relay-card.on i { color: var(--glow); filter: drop-shadow(0 0 50px var(--glow)); animation: glowPulse 2.5s infinite alternate; }
     @keyframes glowPulse { from { filter: drop-shadow(0 0 50px var(--glow)); } to { filter: drop-shadow(0 0 75px var(--glow)); } }
-
     .relay-card h2 { font-size: 1.7rem; font-weight: 700; }
-
     .room-controls {
       text-align: center;
       margin: 60px 0;
@@ -199,11 +187,9 @@
     .room-controls button.not-all-on { background: linear-gradient(135deg, #10b981, #059669); }
     body.light-mode .room-controls button.not-all-on { background: linear-gradient(135deg, #2d8c47, #236b38); }
     .room-controls button:hover { transform: translateY(-6px) scale(1.04); }
-
     .ripple { position:absolute; border-radius:50%; background: radial-gradient(circle, var(--glow-soft) 10%, transparent 70%);
       transform:scale(0); animation: ripple-anim 0.6s ease-out; pointer-events:none; }
     @keyframes ripple-anim { to { transform:scale(5); opacity:0; } }
-
     #loginForm {
       max-width: 420px; margin: 60px auto; padding: 50px 40px;
       background: var(--card); border-radius: 28px; backdrop-filter: blur(16px);
@@ -226,21 +212,17 @@
       transition: all 0.35s;
     }
     #loginForm button:hover { transform: translateY(-4px); }
-
     #dashboard { display: none; }
     footer { text-align: center; padding: 60px; color: var(--text-secondary); font-size: 1rem; }
   </style>
 </head>
 <body>
-
   <button class="theme-toggle" id="themeToggle">
     <i class="fas fa-moon"></i>
   </button>
-
   <div class="title-container" id="titleContainer">
     <h1>Sterowanie domem</h1>
   </div>
-
   <div class="tabs">
     <div class="tab active" data-room="biurko"><i class="fas fa-desktop"></i></div>
     <div class="tab" data-room="salon"><i class="fas fa-couch"></i></div>
@@ -248,13 +230,11 @@
     <div class="tab" data-room="sypialnia"><i class="fas fa-bed"></i></div>
     <div class="tab" data-room="pracownia"><i class="fas fa-tools"></i></div>
   </div>
-
   <div id="loginForm">
     <input type="email" id="email" placeholder="Email" required />
     <input type="password" id="password" placeholder="Hasło" required />
     <button id="loginBtn">Zaloguj się</button>
   </div>
-
   <div id="dashboard">
     <!-- BIURKO -->
     <div class="room active" id="biurko">
@@ -268,7 +248,6 @@
         <button class="room-all-toggle not-all-on" data-room="biurko">Włącz wszystko</button>
       </div>
     </div>
-
     <!-- SALON -->
     <div class="room" id="salon">
       <div class="relay-container">
@@ -283,7 +262,6 @@
         <button class="room-all-toggle not-all-on" data-room="salon">Włącz wszystko</button>
       </div>
     </div>
-
     <!-- KUCHNIA -->
     <div class="room" id="kuchnia">
       <div class="relay-container">
@@ -298,7 +276,6 @@
         <button class="room-all-toggle not-all-on" data-room="kuchnia">Włącz wszystko</button>
       </div>
     </div>
-
     <!-- SYPIALNIA -->
     <div class="room" id="sypialnia">
       <div class="relay-container">
@@ -313,7 +290,6 @@
         <button class="room-all-toggle not-all-on" data-room="sypialnia">Włącz wszystko</button>
       </div>
     </div>
-
     <!-- PRACOWNIA -->
     <div class="room" id="pracownia">
       <div class="relay-container">
@@ -328,19 +304,15 @@
         <button class="room-all-toggle not-all-on" data-room="pracownia">Włącz wszystko</button>
       </div>
     </div>
-
     <div style="text-align:center; margin:70px 0;">
       <button id="logoutBtn">Wyloguj</button>
     </div>
   </div>
-
   <footer>Podjebka od Tech StudyCell © 2025</footer>
-
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDykM2omZ68HY7EEJjPiG16jXbPGW0bYSA",
@@ -352,23 +324,19 @@
       appId: "1:641050671936:web:47d40c3fa12f39962c98a5"
     };
     firebase.initializeApp(firebaseConfig);
-
     const allowedEmail = "joszrank@gmail.com";
     const allowedPassword = "LotyWChmurach";
-
     // Przełącznik motywu
     document.getElementById("themeToggle").addEventListener("click", () => {
       document.body.classList.toggle("light-mode");
       const isLight = document.body.classList.contains("light-mode");
       document.getElementById("themeToggle").innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     });
-
     // Logowanie
     document.getElementById("loginBtn").onclick = () => {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
       if (!email || !password) return alert("Wpisz dane");
-
       if (email === allowedEmail && password === allowedPassword) {
         firebase.auth().signInWithEmailAndPassword(email, password)
           .then(() => {
@@ -379,11 +347,9 @@
           .catch(e => alert("Błąd: " + e.message));
       } else alert("Złe dane");
     };
-
     function initTabs() {
       const db = firebase.database();
       const titleContainer = document.getElementById("titleContainer");
-
       document.querySelectorAll('.tab').forEach(tab => {
         tab.onclick = () => {
           document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -392,36 +358,29 @@
           document.getElementById(tab.dataset.room).classList.add('active');
         };
       });
-
       const rooms = ["biurko", "salon", "kuchnia", "sypialnia", "pracownia"];
-
       rooms.forEach(room => {
         const cards = document.querySelectorAll(`#${room} .relay-card`);
         const allBtn = document.querySelector(`#${room} .room-all-toggle`);
         let states = {};
-
         cards.forEach(card => {
           const path = card.dataset.path;
           const ref = db.ref(path);
-
           ref.on("value", snap => {
             const on = snap.val() === true;
             states[path] = on;
             card.classList.toggle("on", on);
             card.classList.toggle("off", !on);
-
             const allOn = Object.values(states).every(v => v === true);
             allBtn.textContent = allOn ? "Wyłącz wszystko" : "Włącz wszystko";
             allBtn.classList.toggle("all-on", allOn);
             allBtn.classList.toggle("not-all-on", !allOn);
-
-            const anyOnInHouse = rooms.some(r => 
+            const anyOnInHouse = rooms.some(r =>
               Array.from(document.querySelectorAll(`#${r} .relay-card`)).some(c => c.classList.contains('on'))
             );
             document.body.classList.toggle("lights-on", anyOnInHouse);
             titleContainer.classList.toggle("lights-on", anyOnInHouse);
           });
-
           card.onclick = e => {
             const ripple = document.createElement("span");
             const rect = card.getBoundingClientRect();
@@ -432,18 +391,15 @@
             ripple.classList.add("ripple");
             card.appendChild(ripple);
             setTimeout(() => ripple.remove(), 600);
-
             ref.get().then(s => ref.set(!s.val()));
           };
         });
-
         allBtn.onclick = () => {
           const allOn = Object.values(states).every(v => v === true);
           cards.forEach(card => db.ref(card.dataset.path).set(!allOn));
         };
       });
     }
-
     document.getElementById("logoutBtn").onclick = () => {
       firebase.auth().signOut().then(() => {
         document.getElementById("dashboard").style.display = "none";
