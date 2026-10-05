@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Sterowanie • Dom & Garaż</title>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  >
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- =========================================================
+       GLOBALNY HEADER
+       ========================================================= -->
+
+  <header class="app-header">
+
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fas fa-microchip"></i>
+      </div>
+
+      <div>
+        <div class="brand-title">HOME CONTROL</div>
+        <div class="brand-subtitle">Dom & Automatyka</div>
+      </div>
+    </div>
+
+    <nav class="main-navigation">
+
+      <button
+        class="main-nav-btn active"
+        data-section="home"
+      >
+        <i class="fas fa-house"></i>
+        <span>Dom</span>
+      </button>
+
+      <button
+        class="main-nav-btn"
+        data-section="garage"
+      >
+        <i class="fas fa-warehouse"></i>
+        <span>Garaż</span>
+      </button>
+
+    </nav>
+
+    <div class="header-status">
+
+      <div class="connection-indicator">
+        <span id="connectionDot"></span>
+        <span id="connectionText">Łączenie...</span>
+      </div>
+
+      <button
+        id="logoutBtn"
+        class="icon-button"
+        title="Wyloguj"
+      >
+        <i class="fas fa-right-from-bracket"></i>
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================================================
+       LOGOWANIE
+       ========================================================= -->
+
+  <main id="loginScreen">
+
+    <div class="login-card">
+
+      <div class="login-icon">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+
+      <h1>Panel sterowania</h1>
+
+      <p>
+        Zaloguj się, aby uzyskać dostęp do urządzeń.
+      </p>
+
+      <form id="loginForm">
+
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+
+          <input
+            type="email"
+            id="email"
+            placeholder="Adres e-mail"
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+
+          <input
+            type="password"
+            id="password"
+            placeholder="Hasło"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="primary-button"
+        >
+          <i class="fas fa-right-to-bracket"></i>
+          Zaloguj się
+        </button>
+
+        <div id="loginError" class="login-error"></div>
+
+      </form>
+
+    </div>
+
+  </main>
+
+
+  <!-- =========================================================
+       APLIKACJA
+       ========================================================= -->
+
+  <main id="app" class="app hidden">
+
+
+    <!-- =======================================================
+         SEKCJA DOM
+         ======================================================= -->
+
+    <section
+      id="homeSection"
+      class="app-section active"
+    >
+
+      <div class="section-heading">
+
+        <div>
+          <span class="section-eyebrow">
+            <i class="fas fa-house"></i>
+            AUTOMATYKA
+          </span>
+
+          <h1>Sterowanie domem</h1>
+
+          <p>
+            Oświetlenie i urządzenia w poszczególnych pomieszczeniach.
+          </p>
+        </div>
+
+      </div>
+
+
+      <!-- Zakładki pomieszczeń -->
+
+      <div class="room-tabs">
+
+        <button
+          class="room-tab active"
+          data-room="biurko"
+        >
+          <i class="fas fa-desktop"></i>
+          <span>Biurko</span>
+        </button>
+
+        <button
+          class="room-tab"
+          data-room="salon"
+        >
+          <i class="fas fa-couch"></i>
+          <span>Salon</span>
+        </button>
+
+        <button
+          class="room-tab"
+          data-room="kuchnia"
+        >
+          <i class="fas fa-utensils"></i>
+          <span>Kuchnia</span>
+        </button>
+
+        <button
+          class="room-tab"
+          data-room="sypialnia"
+        >
+          <i class="fas fa-bed"></i>
+          <span>Sypialnia</span>
+        </button>
+
+        <button
+          class="room-tab"
+          data-room="pracownia"
+        >
+          <i class="fas fa-tools"></i>
+          <span>Pracownia</span>
+        </button>
+
+      </div>
+
+
+      <!-- =====================================================
+           POMIESZCZENIA
+           ===================================================== -->
+
+      <div id="roomsContainer">
+
+
+        <!-- BIURKO -->
+
+        <div
+          class="room-panel active"
+          id="room-biurko"
+        >
+
+          <div class="relay-grid">
+
+            <div
+              class="relay-card"
+              data-path="biurko/b0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Światło lewe</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="biurko/b1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Światło środkowe</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="biurko/b2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Światło prawe</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="salon/s0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Główne 1/3</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="salon/s1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Główne 2/3</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="salon/s2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Kinkiety</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="biurko/b3"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Gniazdka</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+          </div>
+
+          <button
+            class="room-master-button"
+            data-room="biurko"
+          >
+            Włącz wszystko
+          </button>
+
+        </div>
+
+
+        <!-- SALON -->
+
+        <div
+          class="room-panel"
+          id="room-salon"
+        >
+
+          <div class="relay-grid">
+
+            <div
+              class="relay-card"
+              data-path="salon/s0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Główne</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="salon/s1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Kinkiet lewy</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="salon/s2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Kinkiet prawy</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="salon/g0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Gniazdko TV</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="salon/g1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Gniazdko kanapa</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="salon/g2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Gniazdko stolik</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+          </div>
+
+          <button
+            class="room-master-button"
+            data-room="salon"
+          >
+            Włącz wszystko
+          </button>
+
+        </div>
+
+
+        <!-- KUCHNIA -->
+
+        <div
+          class="room-panel"
+          id="room-kuchnia"
+        >
+
+          <div class="relay-grid">
+
+            <div
+              class="relay-card"
+              data-path="kuchnia/k0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Główne</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="kuchnia/k1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Blat lewy</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="kuchnia/k2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Blat prawy</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="kuchnia/g0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Lodówka</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="kuchnia/g1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Ekspres</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="kuchnia/g2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Zmywarka</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+          </div>
+
+          <button
+            class="room-master-button"
+            data-room="kuchnia"
+          >
+            Włącz wszystko
+          </button>
+
+        </div>
+
+
+        <!-- SYPIALNIA -->
+
+        <div
+          class="room-panel"
+          id="room-sypialnia"
+        >
+
+          <div class="relay-grid">
+
+            <div
+              class="relay-card"
+              data-path="sypialnia/p0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Łóżko lewe</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="sypialnia/p1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Łóżko prawe</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="sypialnia/p2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Sufit</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="sypialnia/g0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Ładowarka L</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="sypialnia/g1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Ładowarka P</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="sypialnia/g2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Lampka</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+          </div>
+
+          <button
+            class="room-master-button"
+            data-room="sypialnia"
+          >
+            Włącz wszystko
+          </button>
+
+        </div>
+
+
+        <!-- PRACOWNIA -->
+
+        <div
+          class="room-panel"
+          id="room-pracownia"
+        >
+
+          <div class="relay-grid">
+
+            <div
+              class="relay-card"
+              data-path="pracownia/w0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>LED listwa 1</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="pracownia/w1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>LED listwa 2</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="pracownia/w2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Lampa stojąca</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="pracownia/g0"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Drukarka</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="pracownia/g1"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Monitor</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+
+            <div
+              class="relay-card"
+              data-path="pracownia/g2"
+            >
+              <div class="relay-icon">
+                <i class="fas fa-plug"></i>
+              </div>
+
+              <div class="relay-info">
+                <h3>Ładowarka</h3>
+                <span class="relay-status">WYŁĄCZONE</span>
+              </div>
+            </div>
+
+          </div>
+
+          <button
+            class="room-master-button"
+            data-room="pracownia"
+          >
+            Włącz wszystko
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         SEKCJA GARAŻ
+         ======================================================= -->
+
+    <section
+      id="garageSection"
+      class="app-section"
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-eyebrow">
+            <i class="fas fa-warehouse"></i>
+            GARAŻ
+          </span>
+
+          <h1>Centrum maszyn</h1>
+
+          <p>
+            Sterowanie urządzeniami warsztatowymi i monitorowanie ich stanu.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- Lista urządzeń -->
+
+      <div class="device-grid">
+
+
+        <!-- ===================================================
+             WIERTARKA STOŁOWA
+             =================================================== -->
+
+        <article
+          class="machine-card"
+          id="machine-wiertarka-stolowa"
+        >
+
+          <!-- HEADER -->
+
+          <div class="machine-header">
+
+            <div class="machine-title">
+
+              <div class="machine-icon">
+                <i class="fas fa-screwdriver-wrench"></i>
+              </div>
+
+              <div>
+
+                <span class="machine-category">
+                  MASZYNA 01
+                </span>
+
+                <h2>Wiertarka stołowa</h2>
+
+                <span class="machine-description">
+                  Sterowanie napędem
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="machine-state state-ready"
+              id="drillState"
+            >
+              <span class="state-dot"></span>
+              <span id="drillStateText">GOTOWA</span>
+            </div>
+
+          </div>
+
+
+          <!-- BODY -->
+
+          <div class="machine-body">
+
+
+            <!-- ===============================================
+                 LEWA STRONA
+                 SUWAK
+                 =============================================== -->
+
+            <div class="speed-section">
+
+              <div class="speed-header">
+
+                <div>
+
+                  <span class="control-label">
+                    PRĘDKOŚĆ
+                  </span>
+
+                  <div class="speed-value">
+
+                    <span id="speedValue">
+                      0
+                    </span>
+
+                    <small id="speedUnit">
+                      RPM
+                    </small>
+
+                  </div>
+
+                </div>
+
+
+                <div class="speed-scale-info">
+
+                  <span>
+                    <i class="fas fa-arrows-left-right"></i>
+                    Zakres
+                  </span>
+
+                  <strong id="speedRangeText">
+                    0–3000 RPM
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- PÓŁOKRĄGŁY SUWAK -->
+
+              <div
+                class="arc-slider"
+                id="arcSlider"
+              >
+
+                <svg
+                  class="arc-svg"
+                  viewBox="0 0 400 230"
+                >
+
+                  <path
+                    class="arc-track"
+                    d="M 45 205 A 155 155 0 0 1 355 205"
+                  />
+
+                  <path
+                    class="arc-progress"
+                    id="arcProgress"
+                    d="M 45 205 A 155 155 0 0 1 355 205"
+                  />
+
+                </svg>
+
+
+                <div
+                  class="arc-knob"
+                  id="arcKnob"
+                ></div>
+
+
+                <div class="arc-min">
+                  <span id="arcMinLabel">0</span>
+                </div>
+
+                <div class="arc-max">
+                  <span id="arcMaxLabel">3000</span>
+                </div>
+
+              </div>
+
+
+              <!-- SUROWY PROCENT -->
+
+              <div class="slider-percentage">
+                <span id="speedPercent">0%</span>
+              </div>
+
+
+              <!-- PRZELICZNIK -->
+
+              <div class="scale-converter">
+
+                <div class="converter-title">
+                  <i class="fas fa-calculator"></i>
+                  Przelicznik skali
+                </div>
+
+                <div class="converter-row">
+
+                  <div>
+                    <span>Wartość sterowania</span>
+                    <strong id="controlValue">0</strong>
+                  </div>
+
+                  <div class="converter-arrow">
+                    →
+                  </div>
+
+                  <div>
+                    <span>Wartość maszyny</span>
+                    <strong id="machineValue">0 RPM</strong>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- ===============================================
+                 PRAWA STRONA
+                 STEROWANIE
+                 =============================================== -->
+
+            <div class="machine-controls">
+
+
+              <!-- OBROTY -->
+
+              <div class="control-block">
+
+                <div class="control-block-header">
+
+                  <span class="control-label">
+                    OBROTY
+                  </span>
+
+                  <span
+                    id="directionText"
+                    class="control-current"
+                  >
+                    PRAWE
+                  </span>
+
+                </div>
+
+
+                <div class="segmented-control">
+
+                  <button
+                    class="segment-button active"
+                    data-device-path="direction"
+                    data-value="right"
+                  >
+                    <i class="fas fa-rotate-right"></i>
+                    PRAWE
+                  </button>
+
+                  <button
+                    class="segment-button"
+                    data-device-path="direction"
+                    data-value="left"
+                  >
+                    <i class="fas fa-rotate-left"></i>
+                    LEWE
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <!-- STEROWANIE -->
+
+              <div class="control-block">
+
+                <div class="control-block-header">
+
+                  <span class="control-label">
+                    STEROWANIE
+                  </span>
+
+                  <span
+                    id="controlModeText"
+                    class="control-current"
+                  >
+                    ZDALNE
+                  </span>
+
+                </div>
+
+
+                <div class="segmented-control">
+
+                  <button
+                    class="segment-button active"
+                    data-device-path="controlMode"
+                    data-value="remote"
+                  >
+                    <i class="fas fa-wifi"></i>
+                    ZDALNE
+                  </button>
+
+                  <button
+                    class="segment-button"
+                    data-device-path="controlMode"
+                    data-value="local"
+                  >
+                    <i class="fas fa-hand"></i>
+                    LOKALNE
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <!-- AUTOSTART -->
+
+              <div class="control-block">
+
+                <div class="control-block-header">
+
+                  <span class="control-label">
+                    AUTOSTART
+                  </span>
+
+                  <span
+                    id="autostartText"
+                    class="control-current"
+                  >
+                    NIEAKTYWNY
+                  </span>
+
+                </div>
+
+
+                <div class="segmented-control">
+
+                  <button
+                    class="segment-button"
+                    data-device-path="autostart"
+                    data-value="true"
+                  >
+                    <i class="fas fa-bolt"></i>
+                    AKTYWNY
+                  </button>
+
+                  <button
+                    class="segment-button active"
+                    data-device-path="autostart"
+                    data-value="false"
+                  >
+                    <i class="fas fa-ban"></i>
+                    NIEAKTYWNY
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <!-- PRZYCISKI MONOSTABILNE -->
+
+              <div class="machine-action-grid">
+
+                <button
+                  class="machine-action start"
+                  data-command="start"
+                >
+                  <i class="fas fa-play"></i>
+                  <span>START</span>
+                </button>
+
+
+                <button
+                  class="machine-action stop"
+                  data-command="stop"
+                >
+                  <i class="fas fa-stop"></i>
+                  <span>STOP</span>
+                </button>
+
+
+                <button
+                  class="machine-action power-off"
+                  data-command="powerOff"
+                >
+                  <i class="fas fa-power-off"></i>
+                  <span>WYŁĄCZ</span>
+                </button>
+
+              </div>
+
+
+              <div class="machine-safety-note">
+
+                <i class="fas fa-triangle-exclamation"></i>
+
+                <span>
+                  Sterowanie zdalne powinno być używane wyłącznie,
+                  gdy maszyna jest w bezpiecznym stanie.
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- FOOTER -->
+
+          <footer class="machine-footer">
+
+            <div>
+              <i class="fas fa-database"></i>
+              Firebase
+            </div>
+
+            <div>
+              Ostatnia aktualizacja:
+              <strong id="lastUpdate">
+                —
+              </strong>
+            </div>
+
+          </footer>
+
+        </article>
+
+
+        <!-- ===================================================
+             MIEJSCE NA KOLEJNE MASZYNY
+             =================================================== -->
+
+        <article class="add-device-card">
+
+          <div class="add-device-icon">
+            <i class="fas fa-plus"></i>
+          </div>
+
+          <h3>Dodaj urządzenie</h3>
+
+          <p>
+            Kolejne maszyny można dodać jako niezależne moduły.
+          </p>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================================================
+       TOAST
+       ========================================================= -->
+
+  <div
+    id="toast"
+    class="toast"
+  >
+    <i class="fas fa-circle-info"></i>
+    <span id="toastText"></span>
+  </div>
+
+
+  <!-- =========================================================
+       FIREBASE
+       ========================================================= -->
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+  <script src="app.js"></script>
+
+</body>
+</html>
